@@ -8,3 +8,9 @@ Basado en:
 * https://www.scrapingbee.com/blog/playwright-web-scraping/
 * https://playwright.dev/docs/selectors#best-practices
 * https://playwright.dev/docs/selectors#quick-guide
+
+###
+
+```
+NODE_ENV=XXXX node index.js
+```
