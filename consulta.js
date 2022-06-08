@@ -2,17 +2,18 @@
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
 require('dotenv').config();
-const playwright = require('playwright');
-const browserType = 'chromium'; // chrome
-//const browserType = 'firefox'; // firefox
-//const browserType = 'webkit'; // safari
-async function main() {
-  const downloadPath = path.relative(process.cwd(), '/downloads');
 
+const path = require('path');
+
+const playwright = require('playwright');
+
+async function main() {
   const today = new Date();
   const dateAsString = `${today.getFullYear()}${
     today.getMonth() + 1
-  }${today.getDay()}`;
+  }${today.getDate()}`;
+
+  const firstDayOfThisMonth = `1/${today.getMonth() + 1}/${today.getFullYear()}`;
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,
@@ -24,8 +25,9 @@ async function main() {
   const navigationPromise = page.waitForNavigation({
     waitUntil: 'domcontentloaded'
   });
+  /*
   await page.setDefaultNavigationTimeout(0);
-
+  */
   await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml');
 
   await navigationPromise;
@@ -42,58 +44,34 @@ async function main() {
 
   let pages = await context.pages();
   const facturadorPage = pages[1];
+  //console.log(pages)
 
   // Pagina
+  await navigationPromise;
   await facturadorPage.click(`input[value="${process.env.USER_NAME}"]`);
 
-  // Pagina
-  await facturadorPage.click('text=Generar Comprobantes');
+  // Acceder a Consultas
+  await navigationPromise;
+  await facturadorPage.click('text=Consultas');
   await facturadorPage.waitForTimeout(2000);
-  // Pagina
+  // Search
+  await navigationPromise;
+  await facturadorPage.fill('input[name="fechaEmisionDesde"]', firstDayOfThisMonth);
+  await facturadorPage.selectOption('select[name="idTipoComprobante"]', '11');
+  await facturadorPage.waitForTimeout(1000);
   await facturadorPage.selectOption('select[name="puntoDeVenta"]', '1');
   await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.click('input[value="Continuar >"]');
+  await facturadorPage.click('input[value="Buscar"]');
   await facturadorPage.waitForTimeout(1000);
-  // Pagina
-  await facturadorPage.selectOption('select[name="idConcepto"]', '2');
-  await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.click('input[value="Continuar >"]');
-  // Pagina
-  await facturadorPage.selectOption('select[name="idIVAReceptor"]', '5');
-  await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.click('input[name="formaDePago"]');
-  await facturadorPage.click('input[value="Continuar >"]');
-  await facturadorPage.waitForTimeout(1000);
-  // Pagina
-  await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '1');
-  await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.fill('textarea[name="detalleDescripcion"]', 'Servicios');
-  await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.fill(
-    'input[name="detallePrecio"]',
-    process.env.USER_MONTO
-  );
-  await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.click('input[value="Continuar >"]');
-  await facturadorPage.waitForTimeout(1000);
+  // Listado
 
-  //confirmacion
-  await facturadorPage.evaluate(
-    () =>
-      (window.confirm = function () {
-        return true;
-      })
-  );
-  await facturadorPage.click('input[value="Confirmar Datos..."]');
-
-  await facturadorPage.waitForTimeout(3000);
-
+  await navigationPromise;
   // Imprimir factura
   const [download] = await Promise.all([
     // Start waiting for the download
     facturadorPage.waitForEvent('download'),
     // Perform the action that initiates download
-    facturadorPage.click('input[value="Imprimir..."]')
+    facturadorPage.click('input[value="Ver"]')
   ]);
 
   await download.saveAs(

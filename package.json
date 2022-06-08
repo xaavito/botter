@@ -1,0 +1,29 @@
+{
+  "name": "botter",
+  "version": "1.0.0",
+  "description": "Bot for doing complicated stuff easy",
+  "main": "index.js",
+  "dependencies": {
+    "playwright": "^1.22.2",
+    "dotenv": "^16.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xaavito/botter.git"
+  },
+  "author": "Javier Martin Gonzalez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xaavito/botter/issues"
+  },
+  "homepage": "https://github.com/xaavito/botter#readme",
+  "keywords": [
+    "bot",
+    "node",
+    "playwright"
+  ]
+}
