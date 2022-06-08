@@ -1,7 +1,7 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
-require('dotenv').config();
+
 const playwright = require('playwright');
 const browserType = 'chromium'; // chrome
 //const browserType = 'firefox'; // firefox

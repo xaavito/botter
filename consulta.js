@@ -1,10 +1,6 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
-require('dotenv').config();
-
-const path = require('path');
-
 const playwright = require('playwright');
 
 async function main() {

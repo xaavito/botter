@@ -9,7 +9,11 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generar": "node -r dotenv/config index.js",
+    "consultar": "node -r dotenv/config consulta.js",
+    "generar-local": "NODE_ENV=mio node -r dotenv/config index.js",
+    "consultar-local": "NODE_ENV=mio node -r dotenv/config consulta.js"
   },
   "repository": {
     "type": "git",

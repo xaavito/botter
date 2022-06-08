@@ -11,6 +11,16 @@ Basado en:
 
 ###
 
+Create .env file with following information
 ```
-NODE_ENV=XXXX node index.js
+USER_CUIL='00000000000'
+USER_PASS='XXXXXXXXX'
+USER_NAME='XXXXXXXXXXXXXX'
+USER_MONTO='14000'
+```
+
+Replace information with own data
+
+```
+node index.js
 ```
