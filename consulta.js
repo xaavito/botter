@@ -7,9 +7,11 @@ async function main() {
   const today = new Date();
   const dateAsString = `${today.getFullYear()}${
     today.getMonth() + 1
-  }${today.getDate()}`;
+  }`;
 
-  const firstDayOfThisMonth = `1/${today.getMonth() + 1}/${today.getFullYear()}`;
+  const firstDayOfThisMonth = `1/${
+    today.getMonth() + 1
+  }/${today.getFullYear()}`;
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,
@@ -36,7 +38,7 @@ async function main() {
   await page.click('input[name="F1:btnIngresar"]');
   await navigationPromise;
   await page.click('text=Comprobantes en línea');
-  await page.waitForTimeout(6000);
+  await page.waitForTimeout(1000);
 
   let pages = await context.pages();
   const facturadorPage = pages[1];
@@ -52,7 +54,10 @@ async function main() {
   await facturadorPage.waitForTimeout(2000);
   // Search
   await navigationPromise;
-  await facturadorPage.fill('input[name="fechaEmisionDesde"]', firstDayOfThisMonth);
+  await facturadorPage.fill(
+    'input[name="fechaEmisionDesde"]',
+    firstDayOfThisMonth
+  );
   await facturadorPage.selectOption('select[name="idTipoComprobante"]', '11');
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.selectOption('select[name="puntoDeVenta"]', '1');
@@ -62,17 +67,31 @@ async function main() {
   // Listado
 
   await navigationPromise;
-  // Imprimir factura
-  const [download] = await Promise.all([
-    // Start waiting for the download
-    facturadorPage.waitForEvent('download'),
-    // Perform the action that initiates download
-    facturadorPage.click('input[value="Ver"]')
-  ]);
 
-  await download.saveAs(
-    `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}.pdf`
-  );
+  // Magia Oscura
+  const rows = facturadorPage.locator('table.jig_table tr td[title="Fecha de Emisión"]');
+  const count = await rows.count();
+  let fechasComprobantes = [];
+  for (let i = 0; i < count; ++i) {
+    fechasComprobantes.push(await rows.nth(i).textContent());
+  }
+
+  const buttons = facturadorPage.locator('table.jig_table tr input[value="Ver"]');
+  const size = await buttons.count();
+
+  for (let i = 0; i < size; i++) {
+    const button = buttons.nth(i);
+    const [download] = await Promise.all([
+      // Start waiting for the download
+      facturadorPage.waitForEvent('download'),
+      // Perform the action that initiates download
+      button.click()
+    ]);
+
+    await download.saveAs(
+      `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}${fechasComprobantes[i].split('/')[0]}.pdf`
+    );
+  }
 
   await facturadorPage.waitForTimeout(3000);
   await browser.close();
