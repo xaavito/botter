@@ -2,18 +2,17 @@
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
 
-
 const playwright = require('playwright');
-const browserType = 'chromium'; // chrome
-//const browserType = 'firefox'; // firefox
-//const browserType = 'webkit'; // safari
-async function main() {
-  const downloadPath = path.relative(process.cwd(), '/downloads');
 
+function rounder(num) {
+  return ('0' + num).slice(-2);
+}
+
+async function main() {
   const today = new Date();
-  const dateAsString = `${today.getFullYear()}${
+  const dateAsString = `${today.getFullYear()}${rounder(
     today.getMonth() + 1
-  }${today.getDay()}`;
+  )}${rounder(today.getDate())}`;
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,
@@ -39,7 +38,7 @@ async function main() {
   await page.click('input[name="F1:btnIngresar"]');
   await navigationPromise;
   await page.click('text=Comprobantes en línea');
-  await page.waitForTimeout(6000);
+  await page.waitForTimeout(1000);
 
   let pages = await context.pages();
   const facturadorPage = pages[1];
