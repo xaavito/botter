@@ -13,6 +13,7 @@ async function main() {
   const dateAsString = `${today.getFullYear()}${rounder(
     today.getMonth() + 1
   )}${rounder(today.getDate())}`;
+  console.log(rounder(today.getDate()));
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,

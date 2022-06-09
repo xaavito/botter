@@ -3,15 +3,17 @@
 // minimum node version 8 for async / await feature
 const playwright = require('playwright');
 
+function rounder(num) {
+  return ('0' + num).slice(-2);
+}
+
 async function main() {
   const today = new Date();
-  const dateAsString = `${today.getFullYear()}${
-    today.getMonth() + 1
-  }`;
+  const dateAsString = `${today.getFullYear()}${rounder(today.getMonth() + 1)}`;
 
-  const firstDayOfThisMonth = `1/${
+  const firstDayOfThisMonth = `1/${rounder(
     today.getMonth() + 1
-  }/${today.getFullYear()}`;
+  )}/${today.getFullYear()}`;
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,
@@ -69,14 +71,18 @@ async function main() {
   await navigationPromise;
 
   // Magia Oscura
-  const rows = facturadorPage.locator('table.jig_table tr td[title="Fecha de Emisión"]');
+  const rows = facturadorPage.locator(
+    'table.jig_table tr td[title="Fecha de Emisión"]'
+  );
   const count = await rows.count();
   let fechasComprobantes = [];
   for (let i = 0; i < count; ++i) {
     fechasComprobantes.push(await rows.nth(i).textContent());
   }
 
-  const buttons = facturadorPage.locator('table.jig_table tr input[value="Ver"]');
+  const buttons = facturadorPage.locator(
+    'table.jig_table tr input[value="Ver"]'
+  );
   const size = await buttons.count();
 
   for (let i = 0; i < size; i++) {
@@ -89,7 +95,9 @@ async function main() {
     ]);
 
     await download.saveAs(
-      `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}${fechasComprobantes[i].split('/')[0]}.pdf`
+      `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}${rounder(
+        fechasComprobantes[i].split('/')[0]
+      )}.pdf`
     );
   }
 
