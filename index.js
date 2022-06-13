@@ -3,10 +3,7 @@
 // minimum node version 8 for async / await feature
 
 const playwright = require('playwright');
-
-function rounder(num) {
-  return ('0' + num).slice(-2);
-}
+const rounder = require('./helper.js');
 
 async function main() {
   const today = new Date();
@@ -49,7 +46,7 @@ async function main() {
 
   // Pagina
   await facturadorPage.click('text=Generar Comprobantes');
-  await facturadorPage.waitForTimeout(2000);
+  await facturadorPage.waitForTimeout(1000);
   // Pagina
   await facturadorPage.selectOption('select[name="puntoDeVenta"]', '1');
   await facturadorPage.waitForTimeout(1000);
@@ -87,7 +84,7 @@ async function main() {
   );
   await facturadorPage.click('input[value="Confirmar Datos..."]');
 
-  await facturadorPage.waitForTimeout(3000);
+  await facturadorPage.waitForTimeout(1000);
 
   // Imprimir factura
   const [download] = await Promise.all([
@@ -101,7 +98,7 @@ async function main() {
     `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}.pdf`
   );
 
-  await facturadorPage.waitForTimeout(3000);
+  await facturadorPage.waitForTimeout(1000);
   await browser.close();
 }
 main();

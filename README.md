@@ -21,6 +21,15 @@ USER_MONTO='14000'
 
 Replace information with own data
 
+
+## Generar Factura
+
 ```
-node index.js
+npm run generar
+```
+
+## Consultar facturacion del mes
+
+```
+npm run consultar
 ```

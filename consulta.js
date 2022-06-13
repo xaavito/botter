@@ -1,11 +1,8 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
+const rounder = require('./helper.js');
 const playwright = require('playwright');
-
-function rounder(num) {
-  return ('0' + num).slice(-2);
-}
 
 async function main() {
   const today = new Date();
@@ -53,7 +50,7 @@ async function main() {
   // Acceder a Consultas
   await navigationPromise;
   await facturadorPage.click('text=Consultas');
-  await facturadorPage.waitForTimeout(2000);
+  await facturadorPage.waitForTimeout(1000);
   // Search
   await navigationPromise;
   await facturadorPage.fill(
@@ -101,7 +98,7 @@ async function main() {
     );
   }
 
-  await facturadorPage.waitForTimeout(3000);
+  await facturadorPage.waitForTimeout(1000);
   await browser.close();
 }
 main();
