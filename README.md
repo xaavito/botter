@@ -11,7 +11,8 @@ Basado en:
 
 ###
 
-Create .env file with following information
+Crear un archivo `.env` con la siguiente informacion:
+
 ```
 USER_CUIL='00000000000'
 USER_PASS='XXXXXXXXX'
@@ -19,7 +20,7 @@ USER_NAME='XXXXXXXXXXXXXX'
 USER_MONTO='14000'
 ```
 
-Replace information with own data
+Reemplazar informacion con la informacion propia.
 
 
 ## Generar Factura
