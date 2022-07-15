@@ -23,7 +23,7 @@ async function main() {
     waitUntil: 'domcontentloaded'
   });
 
-  login(page);
+  await login(page);
 
   await page.click('text=Comprobantes en línea');
   await page.waitForTimeout(1000);

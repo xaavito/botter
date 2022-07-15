@@ -25,8 +25,8 @@ async function main() {
   });
   await page.setDefaultNavigationTimeout(0);
 
- login(page);
- 
+  await login(page);
+
   await navigationPromise;
   await page.click('text=Comprobantes en línea');
   await page.waitForTimeout(1000);

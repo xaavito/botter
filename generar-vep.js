@@ -20,7 +20,7 @@ async function main() {
 
   await page.setDefaultNavigationTimeout(0);
 
-   login(page)
+   await login(page)
 
   await page.click('text=Adhesión y/o empadronamiento al monotributo, modificación de datos e ingreso de claves de confirmación');
 
