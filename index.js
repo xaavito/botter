@@ -41,7 +41,8 @@ async function main() {
   await facturadorPage.click('text=Generar Comprobantes');
   await facturadorPage.waitForTimeout(1000);
   // Pagina
-  await facturadorPage.selectOption('select[name="puntoDeVenta"]', '1');
+  await facturadorPage.selectOption('select[name="puntoDeVenta"]', process.env.N_PUNTO_VENTA || '1');
+
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.click('input[value="Continuar >"]');
   await facturadorPage.waitForTimeout(1000);
