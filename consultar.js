@@ -1,7 +1,7 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
-const { rounder } = require('./helper.js');
+const { login, rounder } = require('./helper.js');
 const playwright = require('playwright');
 
 async function main() {
@@ -22,20 +22,9 @@ async function main() {
   const navigationPromise = page.waitForNavigation({
     waitUntil: 'domcontentloaded'
   });
-  /*
-  await page.setDefaultNavigationTimeout(0);
-  */
-  await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml');
 
-  await navigationPromise;
-  await page.waitForSelector('input[name="F1:username"]');
-  await page.fill('input[name="F1:username"]', process.env.USER_CUIL);
-  await page.click('input[name="F1:btnSiguiente"]');
+  login(page);
 
-  await page.waitForSelector('input[name="F1:password"]', { visible: true });
-  await page.fill('input[name="F1:password"]', process.env.USER_PASS);
-  await page.click('input[name="F1:btnIngresar"]');
-  await navigationPromise;
   await page.click('text=Comprobantes en línea');
   await page.waitForTimeout(1000);
 
