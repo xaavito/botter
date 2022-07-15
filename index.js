@@ -36,7 +36,7 @@ async function main() {
   await page.click('input[name="F1:btnIngresar"]');
   await navigationPromise;
   await page.click('text=Comprobantes en línea');
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(3000);
 
   let pages = await context.pages();
   const facturadorPage = pages[1];
