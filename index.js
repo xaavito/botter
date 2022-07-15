@@ -4,6 +4,7 @@
 
 const playwright = require('playwright');
 const { rounder } = require('./helper.js');
+const {login} = require("./helper");
 
 async function main() {
   const today = new Date();
@@ -24,16 +25,8 @@ async function main() {
   });
   await page.setDefaultNavigationTimeout(0);
 
-  await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml');
+  await login(page);
 
-  await navigationPromise;
-  await page.waitForSelector('input[name="F1:username"]');
-  await page.fill('input[name="F1:username"]', process.env.USER_CUIL);
-  await page.click('input[name="F1:btnSiguiente"]');
-
-  await page.waitForSelector('input[name="F1:password"]', { visible: true });
-  await page.fill('input[name="F1:password"]', process.env.USER_PASS);
-  await page.click('input[name="F1:btnIngresar"]');
   await navigationPromise;
   await page.click('text=Comprobantes en línea');
   await page.waitForTimeout(3000);

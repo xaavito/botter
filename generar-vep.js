@@ -3,6 +3,7 @@
 // minimum node version 8 for async / await feature
 
 const playwright = require('playwright');
+const {login} = require("./helper");
 
 async function main() {
   // disable headless to see the browser's action
@@ -19,17 +20,8 @@ async function main() {
 
   await page.setDefaultNavigationTimeout(0);
 
-  await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml');
+   await login(page)
 
-  await page.waitForSelector('input[name="F1:username"]');
-  await page.fill('input[name="F1:username"]', process.env.USER_CUIL);
-  await page.click('input[name="F1:btnSiguiente"]');
-
-  await page.waitForSelector('input[name="F1:password"]', { visible: true });
-  await page.fill('input[name="F1:password"]', process.env.USER_PASS);
-  await page.click('input[name="F1:btnIngresar"]');
-  await navigationPromise;
-  //await page.waitForTimeout(2000);
   await page.click('text=Adhesión y/o empadronamiento al monotributo, modificación de datos e ingreso de claves de confirmación');
 
   await page.waitForTimeout(3000);
