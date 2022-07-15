@@ -1,7 +1,7 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
-const rounder = require('./helper.js');
+const { rounder } = require('./helper.js');
 const playwright = require('playwright');
 
 async function main() {

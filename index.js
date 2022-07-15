@@ -3,7 +3,7 @@
 // minimum node version 8 for async / await feature
 
 const playwright = require('playwright');
-const rounder = require('./helper.js');
+const { rounder } = require('./helper.js');
 
 async function main() {
   const today = new Date();
