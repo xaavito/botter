@@ -3,7 +3,6 @@
 // minimum node version 8 for async / await feature
 
 const playwright = require('playwright');
-const rounder = require('./helper.js');
 
 async function main() {
   // disable headless to see the browser's action
