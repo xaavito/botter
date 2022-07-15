@@ -19,6 +19,11 @@ USER_NAME='XXXXXXXXXXXXXX'
 USER_MONTO='14000'
 ```
 
+Opcioonal:
+```
+N_PUNTO_VENTA='1`
+```
+
 Replace information with own data
 
 
