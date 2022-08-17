@@ -28,6 +28,8 @@ async function main() {
   await login(page);
 
   await navigationPromise;
+  await page.click('text=Ver todos');
+  await page.waitForTimeout(1000);
   await page.click('text=Comprobantes en línea');
   await page.waitForTimeout(3000);
 
