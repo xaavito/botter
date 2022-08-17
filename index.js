@@ -2,9 +2,12 @@
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
 
-const playwright = require('playwright');
+const playwright  = require('playwright');
 const { rounder } = require('./helper.js');
-const {login} = require("./helper");
+const {login}     = require("./helper");
+const fs          = require('fs');
+let detallesRaw   = fs.readFileSync('./detalles.json');
+let detallesArr   = JSON.parse(detallesRaw);
 
 async function main() {
   const today = new Date();
@@ -61,8 +64,10 @@ async function main() {
   // Pagina
   await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '1');
   await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.fill('textarea[name="detalleDescripcion"]', process.env.DETALLE_DESCRIPCION || 'Servicios');
-  await facturadorPage.waitForTimeout(1000);
+
+  var random = Math.floor(Math.random() * detallesArr.length);
+  await facturadorPage.fill('textarea[name="detalleDescripcion"]', detallesArr[random] || 'Servicios');
+  await facturadorPage.waitForTimeout(10000);
   await facturadorPage.fill(
     'input[name="detallePrecio"]',
     process.env.USER_MONTO
