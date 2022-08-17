@@ -23,10 +23,11 @@ USER_MONTO='14000'
 Opcional:
 ```
 N_PUNTO_VENTA='1'
-DETALLE_DESCRIPCION='Detalle de factura deseado'
 ```
 
 Reemplazar informacion con la informacion propia.
+
+Las facturas se generarán con una descripcion del servicio facturado random obtenido de `detalles.json`
 
 ## Generar Factura
 
