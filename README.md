@@ -11,7 +11,7 @@ Basado en:
 
 ###
 
-Crear un archivo `.env` con la siguiente informacion:
+Actualizar el archivo `.env` con la siguiente informacion:
 
 ```
 USER_CUIL='00000000000'
@@ -20,14 +20,13 @@ USER_NAME='XXXXXXXXXXXXXX'
 USER_MONTO='14000'
 ```
 
-Opcioonal:
+Opcional:
 ```
-N_PUNTO_VENTA='1`
+N_PUNTO_VENTA='1'
+DETALLE_DESCRIPCION='Detalle de factura deseado'
 ```
 
 Reemplazar informacion con la informacion propia.
-
-
 
 ## Generar Factura
 
