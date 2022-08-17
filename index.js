@@ -61,7 +61,7 @@ async function main() {
   // Pagina
   await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '1');
   await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.fill('textarea[name="detalleDescripcion"]', 'Servicios');
+  await facturadorPage.fill('textarea[name="detalleDescripcion"]', process.env.DETALLE_DESCRIPCION || 'Servicios');
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.fill(
     'input[name="detallePrecio"]',
