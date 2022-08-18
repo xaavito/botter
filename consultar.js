@@ -3,6 +3,7 @@
 // minimum node version 8 for async / await feature
 const { login, rounder } = require('./helper.js');
 const playwright = require('playwright');
+const uuid = require('uuid');
 
 async function main() {
   const today = new Date();
@@ -83,7 +84,7 @@ async function main() {
     await download.saveAs(
       `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}${rounder(
         fechasComprobantes[i].split('/')[0]
-      )}.pdf`
+      )}-${uuid.v1()}.pdf`
     );
   }
 

@@ -5,6 +5,7 @@
 const playwright = require('playwright');
 const { rounder } = require('./helper.js');
 const {login} = require("./helper");
+const uuid = require('uuid');
 
 async function main() {
   const today = new Date();
@@ -92,7 +93,7 @@ async function main() {
   ]);
 
   await download.saveAs(
-    `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}.pdf`
+    `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}-${uuid.v1()}.pdf`
   );
 
   await facturadorPage.waitForTimeout(1000);

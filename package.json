@@ -4,10 +4,10 @@
   "description": "Bot for doing complicated stuff easy",
   "main": "index.js",
   "dependencies": {
+    "dotenv": "^16.0.1",
     "playwright": "^1.22.2",
-    "dotenv": "^16.0.1"
+    "uuid": "^8.3.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "generar": "node -r dotenv/config index.js",
