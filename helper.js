@@ -1,5 +1,18 @@
 const rounder = (num) => ('0' + num).slice(-2);
 
+let detallesArr = JSON.parse(process.env.DETALLES);
+let valoresArr = JSON.parse(process.env.USER_MONTO);
+
+const randomDetalle = () => {
+    var random = Math.floor(Math.random() * detallesArr.length);
+    return detallesArr[random] || 'Servicios'
+};
+
+const randomValor = () => {
+    var random = Math.floor(Math.random() * valoresArr.length);
+    return valoresArr[random]
+};
+
 /**
  * Autentica en la pagina del afip completando user and password
  * Usa las credenciales de .env
@@ -18,5 +31,7 @@ async function login(page) {
 
 module.exports = {
     rounder,
-    login
+    login,
+    randomDetalle,
+    randomValor
 }

@@ -9,7 +9,7 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node -r dotenv/config test.js",
     "generar": "node -r dotenv/config index.js",
     "generar-vep": "node -r dotenv/config generar-vep.js",
     "consultar": "node -r dotenv/config consultar.js"

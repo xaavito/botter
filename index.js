@@ -1,10 +1,6 @@
-// npm install playwright
-// may take a while for downloading binaries
-// minimum node version 8 for async / await feature
-
 const playwright = require('playwright');
-const { rounder } = require('./helper.js');
-const {login} = require("./helper");
+const { rounder, login, randomDetalle, randomValor } = require('./helper.js');
+
 const uuid = require('uuid');
 
 async function main() {
@@ -44,7 +40,10 @@ async function main() {
   await facturadorPage.click('text=Generar Comprobantes');
   await facturadorPage.waitForTimeout(1000);
   // Pagina
-  await facturadorPage.selectOption('select[name="puntoDeVenta"]', process.env.N_PUNTO_VENTA || '1');
+  await facturadorPage.selectOption(
+    'select[name="puntoDeVenta"]',
+    process.env.N_PUNTO_VENTA || '1'
+  );
 
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.click('input[value="Continuar >"]');
@@ -62,12 +61,13 @@ async function main() {
   // Pagina
   await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '1');
   await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.fill('textarea[name="detalleDescripcion"]', 'Servicios');
-  await facturadorPage.waitForTimeout(1000);
+
   await facturadorPage.fill(
-    'input[name="detallePrecio"]',
-    process.env.USER_MONTO
+    'textarea[name="detalleDescripcion"]',
+    randomDetalle()
   );
+  await facturadorPage.waitForTimeout(10000);
+  await facturadorPage.fill('input[name="detallePrecio"]', randomValor());
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.click('input[value="Continuar >"]');
   await facturadorPage.waitForTimeout(1000);
@@ -93,7 +93,9 @@ async function main() {
   ]);
 
   await download.saveAs(
-    `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}-${uuid.v1()}.pdf`
+    `./downloads/factura-${
+      process.env.USER_CUIL
+    }-${dateAsString}-${uuid.v1()}.pdf`
   );
 
   await facturadorPage.waitForTimeout(1000);
