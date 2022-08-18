@@ -1,13 +1,5 @@
-// npm install playwright
-// may take a while for downloading binaries
-// minimum node version 8 for async / await feature
-
-const playwright  = require('playwright');
-const { rounder } = require('./helper.js');
-const {login}     = require("./helper");
-const fs          = require('fs');
-let detallesRaw   = fs.readFileSync('./detalles.json');
-let detallesArr   = JSON.parse(detallesRaw);
+const playwright = require('playwright');
+const { rounder, login, randomDetalle, randomValor } = require('./helper.js');
 
 async function main() {
   const today = new Date();
@@ -46,7 +38,10 @@ async function main() {
   await facturadorPage.click('text=Generar Comprobantes');
   await facturadorPage.waitForTimeout(1000);
   // Pagina
-  await facturadorPage.selectOption('select[name="puntoDeVenta"]', process.env.N_PUNTO_VENTA || '1');
+  await facturadorPage.selectOption(
+    'select[name="puntoDeVenta"]',
+    process.env.N_PUNTO_VENTA || '1'
+  );
 
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.click('input[value="Continuar >"]');
@@ -65,13 +60,12 @@ async function main() {
   await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '1');
   await facturadorPage.waitForTimeout(1000);
 
-  var random = Math.floor(Math.random() * detallesArr.length);
-  await facturadorPage.fill('textarea[name="detalleDescripcion"]', detallesArr[random] || 'Servicios');
-  await facturadorPage.waitForTimeout(10000);
   await facturadorPage.fill(
-    'input[name="detallePrecio"]',
-    process.env.USER_MONTO
+    'textarea[name="detalleDescripcion"]',
+    randomDetalle()
   );
+  await facturadorPage.waitForTimeout(10000);
+  await facturadorPage.fill('input[name="detallePrecio"]', randomValor());
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.click('input[value="Continuar >"]');
   await facturadorPage.waitForTimeout(1000);

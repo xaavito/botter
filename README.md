@@ -11,13 +11,16 @@ Basado en:
 
 ###
 
-Actualizar el archivo `.env` con la siguiente informacion:
+Renombrar el archivo `.env.example` y modificar la configuracion con sus variables:
 
 ```
 USER_CUIL='00000000000'
 USER_PASS='XXXXXXXXX'
 USER_NAME='XXXXXXXXXXXXXX'
-USER_MONTO='14000'
+# Todas las opciones una atras de otra, no meter /n o nada del estilo
+USER_MONTO=["18000", "19000", "15000"]
+# Todas las opciones una atras de otra, no meter /n o nada del estilo
+DETALLES=["Actualización Servidor.","Actualización Cliente.","Arreglo pagina web.","Instalación paquetes","Instalación computadora nueva","Alta de cliente","Reparación base de datos","Backup base de datos","Proceso de backup automático","Servicio de Actualización de BD","Instalación de nueva terminal con cableado incluido"]
 ```
 
 Opcional:
