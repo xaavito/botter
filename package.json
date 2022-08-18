@@ -4,15 +4,15 @@
   "description": "Bot for doing complicated stuff easy",
   "main": "index.js",
   "dependencies": {
+    "dotenv": "^16.0.1",
     "playwright": "^1.22.2",
-    "dotenv": "^16.0.1"
+    "uuid": "^8.3.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "node -r dotenv/config test.js",
     "generar": "node -r dotenv/config index.js",
     "generar-vep": "node -r dotenv/config generar-vep.js",
-    "consultar": "node -r dotenv/config consulta.js"
+    "consultar": "node -r dotenv/config consultar.js"
   },
   "repository": {
     "type": "git",
