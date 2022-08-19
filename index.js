@@ -66,7 +66,7 @@ async function main() {
     'textarea[name="detalleDescripcion"]',
     randomDetalle()
   );
-  await facturadorPage.waitForTimeout(10000);
+  await facturadorPage.waitForTimeout(1000);
   await facturadorPage.fill('input[name="detallePrecio"]', randomValor());
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.click('input[value="Continuar >"]');
