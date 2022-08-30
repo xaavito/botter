@@ -18,17 +18,15 @@ const randomValor = () => {
 
 const today = new Date();
 
-const dateAsString = () => {
+const dateAsString = () =>
   `${today.getFullYear()}${rounder(today.getMonth() + 1)}${rounder(
     today.getDate()
   )}`;
-};
 
-const dateFormatted = () => {
+const dateFormatted = () =>
   `${rounder(today.getDate())}/${rounder(
     today.getMonth() + 1
   )}/${today.getFullYear()}`;
-};
 
 /**
  * Autentica en la pagina del afip completando user and password
@@ -48,13 +46,13 @@ async function login(page) {
 
 /**
  * Guarda facturas generadas a CSV, la crea o agrega
- * @param {date} fecha 
- * @param {string} item 
- * @param {string} monto 
+ * @param {date} fecha
+ * @param {string} item
+ * @param {string} monto
  */
 function saveToCSV(fecha, item, monto) {
   var writer = csvWriter({ sendHeaders: false }); //Instantiate var
-  var csvFilename = `${process.env.USER_NAME}.csv`;
+  var csvFilename = `${process.env.CUIL}.csv`;
 
   // If CSV file does not exist, create it and add the headers
   if (!fs.existsSync(csvFilename)) {

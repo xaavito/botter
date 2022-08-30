@@ -3,7 +3,6 @@ const {
   login,
   randomDetalle,
   randomValor,
-  randomDetalle,
   dateAsString,
   dateFormatted,
   saveToCSV
@@ -101,7 +100,7 @@ async function main() {
     }-${dateAsString()}-${uuid.v1()}.pdf`
   );
 
-  saveToCSV(dateFormatted, detalle, valor);
+  saveToCSV(dateFormatted(), detalle, valor);
 
   await facturadorPage.waitForTimeout(1000);
 
