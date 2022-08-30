@@ -1,13 +1,19 @@
 const playwright = require('playwright');
-const { rounder, login, randomDetalle, randomValor } = require('./helper.js');
+const {
+  login,
+  randomDetalle,
+  randomValor,
+  randomDetalle,
+  dateAsString,
+  dateFormatted,
+  saveToCSV
+} = require('./helper.js');
 
 const uuid = require('uuid');
 
 async function main() {
-  const today = new Date();
-  const dateAsString = `${today.getFullYear()}${rounder(
-    today.getMonth() + 1
-  )}${rounder(today.getDate())}`;
+  const detalle = randomDetalle();
+  const valor = randomValor();
 
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
@@ -62,12 +68,9 @@ async function main() {
   await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '1');
   await facturadorPage.waitForTimeout(1000);
 
-  await facturadorPage.fill(
-    'textarea[name="detalleDescripcion"]',
-    randomDetalle()
-  );
+  await facturadorPage.fill('textarea[name="detalleDescripcion"]', detalle);
   await facturadorPage.waitForTimeout(1000);
-  await facturadorPage.fill('input[name="detallePrecio"]', randomValor());
+  await facturadorPage.fill('input[name="detallePrecio"]', valor);
   await facturadorPage.waitForTimeout(1000);
   await facturadorPage.click('input[value="Continuar >"]');
   await facturadorPage.waitForTimeout(1000);
@@ -95,10 +98,13 @@ async function main() {
   await download.saveAs(
     `./downloads/factura-${
       process.env.USER_CUIL
-    }-${dateAsString}-${uuid.v1()}.pdf`
+    }-${dateAsString()}-${uuid.v1()}.pdf`
   );
 
+  saveToCSV(dateFormatted, detalle, valor);
+
   await facturadorPage.waitForTimeout(1000);
+
   await browser.close();
 }
 main();
