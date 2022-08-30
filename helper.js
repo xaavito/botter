@@ -52,7 +52,7 @@ async function login(page) {
  */
 function saveToCSV(fecha, item, monto) {
   var writer = csvWriter({ sendHeaders: false }); //Instantiate var
-  var csvFilename = `${process.env.CUIL}.csv`;
+  var csvFilename = `${process.env.USER_CUIL}.csv`;
 
   // If CSV file does not exist, create it and add the headers
   if (!fs.existsSync(csvFilename)) {
