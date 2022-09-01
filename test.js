@@ -1,8 +1,14 @@
-const { randomDetalle, randomValor } = require('./helper.js');
+const {
+  randomDetalle,
+  randomValor,
+  saveToCSV,
+  dateFormatted
+} = require('./helper.js');
 
 async function main() {
-  console.log(randomDetalle())
-  console.log(randomValor())
+  console.log(randomDetalle());
+  console.log(randomValor());
+  saveToCSV(dateFormatted(), randomDetalle(), randomValor());
 }
 
 main();
