@@ -44,3 +44,25 @@ npm run generar
 ```
 npm run consultar
 ```
+
+## Chequeo de formato
+
+```
+npm run format:check
+```
+
+## Formateo
+
+```
+npm run format:write
+```
+
+## Chequeo eslint
+```
+npm run lint:check
+```
+## Autofix eslint
+
+```
+npm run lint:fix
+```
