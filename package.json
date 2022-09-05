@@ -13,7 +13,11 @@
     "test": "node -r dotenv/config test.js",
     "generar": "node -r dotenv/config index.js",
     "generar-vep": "node -r dotenv/config generar-vep.js",
-    "consultar": "node -r dotenv/config consultar.js"
+    "consultar": "node -r dotenv/config consultar.js",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "repository": {
     "type": "git",
@@ -29,5 +33,10 @@
     "bot",
     "node",
     "playwright"
-  ]
+  ],
+  "devDependencies": {
+    "eslint": "^8.23.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.7.1"
+  }
 }
