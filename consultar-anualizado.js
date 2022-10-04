@@ -3,7 +3,6 @@ const {
   sanitizeNumber,
   getFormatedDate,
   getDatesfromOneYearBack,
-  getDatesfromOneYearBackv2,
   saveToCSV
 } = require('./helper.js')
 
@@ -59,7 +58,7 @@ async function main() {
   await facturadorPage.waitForTimeout(1000)
 
   //REPETIR POR CADA FECHA
-  var datesArr = getDatesfromOneYearBackv2()
+  var datesArr = getDatesfromOneYearBack()
   let totalAnual = 0
   // datesArr.forEach(async e => {
   for (const e of datesArr) {
@@ -99,7 +98,7 @@ async function main() {
     for (let i = 0; i < count; ++i) {
       valorFactura = sanitizeNumber(await rowsAmounts.nth(i).textContent());
       totalAnual += valorFactura
-      saveToCSV(await rowsDates.nth(i).textContent(), 'sin detalle', valorFactura, 'coco')
+      saveToCSV(await rowsDates.nth(i).textContent(), 'sin detalle', valorFactura, 'DetallesAnuales')
     }
     await facturadorPage.click('text=Consulta')
     await facturadorPage.waitForTimeout(1000)

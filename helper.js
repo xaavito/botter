@@ -30,7 +30,6 @@ const dateFormatted = () =>
 
 // Dado '$ 20.000,00' devuelve 20000
 const sanitizeNumber = (number) => {
-  console.log(number)
   let result = number.split('$')[1].trim()
   result = parseInt(result.split(',')[0].replace('.', ''))
   return result
@@ -67,30 +66,6 @@ const addDays = (date, numOfDays) => {
  * @returns Array
  */
 const getDatesfromOneYearBack = () => {
-  var minus1year = subtractYears(1)
-  var sumDate = addDays(minus1year, 27)
-  var datesArr = []
-
-  for (let i = 0; i < 13; i++) {
-    var dateObj = { from: sumDate }
-    sumDate = addDays(sumDate, 27)
-    if (sumDate > today) {
-      dateObj.to = today
-      datesArr.push(dateObj)
-      break
-    }
-    dateObj.to = sumDate
-    datesArr.push(dateObj)
-  }
-  return datesArr
-}
-
-/**
- * Devuelve array de fechas de 27 días empezando de 1 año atrás desde hoy.
- * Ej: { from: 2021-10-31T01:34:49.818Z, to: 2021-11-27T01:34:49.818Z }
- * @returns Array
- */
-const getDatesfromOneYearBackv2 = () => {
   var minus1year = subtractYears(1)
   let endYear = false
   let fromDate = minus1year,
@@ -181,5 +156,4 @@ module.exports = {
   addDays,
   today,
   getDatesfromOneYearBack,
-  getDatesfromOneYearBackv2,
 }
