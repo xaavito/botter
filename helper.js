@@ -28,9 +28,9 @@ const dateFormatted = () =>
     today.getMonth() + 1
   )}/${today.getFullYear()}`
 
-
 // Dado '$ 20.000,00' devuelve 20000
 const sanitizeNumber = (number) => {
+  console.log(number)
   let result = number.split('$')[1].trim()
   result = parseInt(result.split(',')[0].replace('.', ''))
   return result
@@ -38,23 +38,27 @@ const sanitizeNumber = (number) => {
 
 const getFormatedDate = (myDate) => {
   // returns DD/MM/YYYY
-  var day = myDate.getDate();
-  var month = myDate.getMonth() + 1;
-  var year = myDate.getFullYear();
+  var day = myDate.getDate()
+  var month = myDate.getMonth() + 1
+  var year = myDate.getFullYear()
 
-  if (day < 10) { day = '0' + day; }
-  if (month < 10) { month = '0' + month; }
+  if (day < 10) {
+    day = '0' + day
+  }
+  if (month < 10) {
+    month = '0' + month
+  }
 
-  return `${day}/${month}/${year}`;
+  return `${day}/${month}/${year}`
 }
 
 const subtractYears = (numOfYears, date = new Date()) => {
-  return new Date(date.setFullYear(date.getFullYear() - numOfYears));
+  return new Date(date.setFullYear(date.getFullYear() - numOfYears))
 }
 
 const addDays = (date, numOfDays) => {
-  var myDate = new Date(date);
-  return new Date(myDate.setDate(myDate.getDate() + numOfDays));
+  var myDate = new Date(date)
+  return new Date(myDate.setDate(myDate.getDate() + numOfDays))
 }
 
 /**
@@ -63,22 +67,50 @@ const addDays = (date, numOfDays) => {
  * @returns Array
  */
 const getDatesfromOneYearBack = () => {
-  var minus1year = subtractYears(1);
-  var sumDate    = addDays(minus1year, 27);
-  var datesArr   = []
+  var minus1year = subtractYears(1)
+  var sumDate = addDays(minus1year, 27)
+  var datesArr = []
 
   for (let i = 0; i < 13; i++) {
-    var dateObj = { 'from': sumDate }
-    sumDate = addDays(sumDate, 27);
-    if(sumDate > today){
-      dateObj.to = today;
-      datesArr.push(dateObj);
+    var dateObj = { from: sumDate }
+    sumDate = addDays(sumDate, 27)
+    if (sumDate > today) {
+      dateObj.to = today
+      datesArr.push(dateObj)
       break
     }
-    dateObj.to = sumDate;
-    datesArr.push(dateObj);
+    dateObj.to = sumDate
+    datesArr.push(dateObj)
   }
-  return datesArr;
+  return datesArr
+}
+
+/**
+ * Devuelve array de fechas de 27 días empezando de 1 año atrás desde hoy.
+ * Ej: { from: 2021-10-31T01:34:49.818Z, to: 2021-11-27T01:34:49.818Z }
+ * @returns Array
+ */
+const getDatesfromOneYearBackv2 = () => {
+  var minus1year = subtractYears(1)
+  let endYear = false
+  let fromDate = minus1year,
+    toDate
+
+  var datesArr = []
+
+  while (!endYear) {
+    toDate = addDays(fromDate, 30)
+
+    if (toDate > new Date()) {
+      toDate = new Date()
+      endYear = true
+    }
+
+    datesArr.push({ from: fromDate, to: toDate })
+    fromDate = addDays(toDate, 1)
+  }
+
+  return datesArr
 }
 
 /**
@@ -103,9 +135,14 @@ async function login(page) {
  * @param {string} item
  * @param {string} monto
  */
-function saveToCSV(fecha, item, monto) {
+function saveToCSV(fecha, item, monto, fileName = false) {
   var writer = csvWriter({ sendHeaders: false }) //Instantiate var
-  var csvFilename = `${process.env.USER_CUIL}.csv`
+  var csvFilename
+  if (fileName) {
+    csvFilename = `${fileName}.csv`
+  } else {
+    csvFilename = `${process.env.USER_CUIL}.csv`
+  }
 
   // If CSV file does not exist, create it and add the headers
   if (!fs.existsSync(csvFilename)) {
@@ -144,4 +181,5 @@ module.exports = {
   addDays,
   today,
   getDatesfromOneYearBack,
+  getDatesfromOneYearBackv2,
 }
