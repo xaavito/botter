@@ -14,6 +14,7 @@
     "generar": "node -r dotenv/config index.js",
     "generar-vep": "node -r dotenv/config generar-vep.js",
     "consultar": "node -r dotenv/config consultar.js",
+    "consultar-anual": "node -r dotenv/config consultar-anualizado.js",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "lint:check": "eslint .",
