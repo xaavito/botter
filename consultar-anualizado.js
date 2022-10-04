@@ -1,16 +1,12 @@
-// npm install playwright
-// may take a while for downloading binaries
-// minimum node version 8 for async / await feature
 const {
   login,
-  rounder,
   sanitizeNumber,
   getFormatedDate,
   getDatesfromOneYearBack,
+  saveToCSV
 } = require('./helper.js')
 
 const playwright = require('playwright')
-const uuid = require('uuid')
 
 async function main() {
   // disable headless to see the browser's action
@@ -52,7 +48,10 @@ async function main() {
   await facturadorPage.click('id=btnMostrarPuntosVentas')
   await facturadorPage.waitForTimeout(1000)
 
-  await facturadorPage.selectOption('select[id="listaPuntosVentaModal"]', '00001')
+  await facturadorPage.selectOption(
+    'select[id="listaPuntosVentaModal"]',
+    '00001'
+  )
   await facturadorPage.waitForTimeout(1000)
 
   await facturadorPage.click('id=btnAceptarModal')
@@ -65,34 +64,51 @@ async function main() {
   for (const e of datesArr) {
     await facturadorPage.click('input[id="fechaEmision"]')
     await facturadorPage.waitForTimeout(1000)
-    await facturadorPage.type('input[name="daterangepicker_start"]', getFormatedDate(e.from))
+    await facturadorPage.type(
+      'input[name="daterangepicker_start"]',
+      getFormatedDate(e.from)
+    )
     await facturadorPage.waitForTimeout(1000)
-    await facturadorPage.type('input[name="daterangepicker_end"]', getFormatedDate(e.to))
+    await facturadorPage.type(
+      'input[name="daterangepicker_end"]',
+      getFormatedDate(e.to)
+    )
     await facturadorPage.waitForTimeout(1000)
     await facturadorPage.click('text=Aplicar')
     await facturadorPage.waitForTimeout(1000)
 
     await facturadorPage.click('text=Buscar')
     await facturadorPage.waitForTimeout(1000)
-  
+
     // Cambiar cantidad de items a 50 en la tabla (MEJORAR)
     await facturadorPage.click('button.buttons-collection.buttons-page-length')
     await facturadorPage.waitForTimeout(1000)
     await facturadorPage.locator('li.button-page-length').nth(3).click()
     await facturadorPage.waitForTimeout(1000)
-  
-    const rows = await facturadorPage.locator(
+
+    const rowsAmounts = await facturadorPage.locator(
       'table#tablaDataTables tr td.alignRight'
     )
-    const count = await rows.count()
+
+    const rowsDates = await facturadorPage.locator(
+      'table#tablaDataTables tr td.sorting_1'
+    )
+    const count = await rowsAmounts.count();
+    let valorFactura;
     for (let i = 0; i < count; ++i) {
-      totalAnual += sanitizeNumber(await rows.nth(i).textContent())
+      valorFactura = sanitizeNumber(await rowsAmounts.nth(i).textContent());
+      totalAnual += valorFactura
+      saveToCSV(await rowsDates.nth(i).textContent(), 'sin detalle', valorFactura, 'DetallesAnuales')
     }
     await facturadorPage.click('text=Consulta')
     await facturadorPage.waitForTimeout(1000)
   }
 
-  console.log(`Total facturado desde ${datesArr[0].from} hasta ${datesArr.slice(-1)[0].to}: $${totalAnual}`)
+  console.log(
+    `Total facturado desde ${datesArr[0].from} hasta ${
+      datesArr.slice(-1)[0].to
+    }: $${totalAnual}`
+  )
 
   // ToDo downgrade next timeout
   await facturadorPage.waitForTimeout(10000)
