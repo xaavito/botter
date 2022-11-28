@@ -8,6 +8,8 @@ Basado en:
 - https://www.scrapingbee.com/blog/playwright-web-scraping/
 - https://playwright.dev/docs/selectors#best-practices
 - https://playwright.dev/docs/selectors#quick-guide
+- https://www.digitalocean.com/community/tutorials/nodejs-interactive-command-line-prompts
+- https://www.educative.io/answers/how-to-use-the-inquirer-node-package
 
 ###
 
@@ -36,10 +38,20 @@ Las facturas se generarán con una descripcion del servicio facturado random obt
 ## Generar Factura
 
 ```
-npm run generar
+npm run botter
+
+`generate factura random`
 ```
 
-## Consultar facturacion del mes
+## Listar generadas
+
+```
+npm run botter
+
+`listar facturas realizadas a la fecha`
+```
+
+## Consultar facturacion del mes (NOT IMPLEMENTED in V2 but will run anyway)
 
 ```
 npm run consultar
