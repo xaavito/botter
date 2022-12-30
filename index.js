@@ -7,6 +7,7 @@ const figlet = require('figlet')
 
 const GENERAR = 'generate factura random'
 const LISTAR = 'listar facturas realizadas a la fecha'
+const FACTURACION_MENSUAL = 'Ver Facturacion Mensual'
 
 const { generar } = require('./generar');
 const { listar } = require('./listar');
@@ -29,38 +30,60 @@ const askQuestions = async () => {
       type: 'list',
       name: 'selection',
       message: 'Que queres que Botter haga por ti??',
-      choices: [GENERAR, LISTAR],
+      choices: [GENERAR, LISTAR, FACTURACION_MENSUAL],
     },
   ]
   return inquirer.prompt(questions)
 }
 
 const callToAction = async (action) => {
+  let values
   if (action === GENERAR) {
-    await generar();
+    values = await generar();
   }
   if (action === LISTAR) {
     await listar();
   }
-  return action
+  if (action === FACTURACION_MENSUAL) {
+    await facturacionMensual();
+  }
+  return values;
 }
 
-const success = (result) => {
+const success = async (result, values) => {
   console.log(
     chalk.white.bgGreen.bold(`Listo! accion finalizada!!!! ${result}`)
   )
+  if (result.includes('generate')) {
+    console.log(
+      chalk.white.bgGreen.bold(`Factura generada el dia ${values.fecha}, detalle ${values.detalle}, valor ${values.valor}`)
+    )
+  }
+}
+
+const facturacionMensual = async () => {
+  const invoicesList = await listar(true);
+  console.log('afuera', invoicesList)
+
+  invoicesList.forEach(element => {
+    const fechaFormateada = new Date(element.Fecha);
+    console.log(fechaFormateada.getMonth)
+  });
 }
 
 const run = async () => {
   // show script introduction
   init()
   // ask questions
-  const { selection } = await askQuestions()
+  const { selection } = await askQuestions();
+  console.log(
+    chalk.white.bgRed.bold(`Realizando accion ${selection}, por favor espere....`)
+  )
   // do stuff with input
   // maybe we should primisfy all and return actual status
   const result = await callToAction(selection)
   // show success message
-  success(selection)
+  await success(selection, result)
 }
 
 run();

@@ -105,7 +105,9 @@ async function generar() {
 
   await facturadorPage.waitForTimeout(1000)
 
-  await browser.close()
+  await browser.close();
+
+  return { detalle, valor, fecha: dateFormatted() }
 }
 
 module.exports = { generar }
