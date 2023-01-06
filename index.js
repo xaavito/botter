@@ -56,8 +56,7 @@ const userDataQuestions = [{
 const init = () => {
   console.log(
     chalk.green(
-      figlet.textSync('Bottteeeerrr', {
-        font: 'Ghost',
+      figlet.textSync('FACTURA C', {
         horizontalLayout: 'default',
         verticalLayout: 'default',
       })
@@ -82,30 +81,36 @@ const run = async () => {
   }
   if(result.selection == MANUAL){
     var userData = await inquirer.prompt(userDataQuestions)
+
     if(userData.concepts != null && userData.concepts != BOTH_CONCEPTS){
-      var month = await inquirer.prompt({
+      var monthData = await inquirer.prompt({
         id:'month',
         type: 'list',
         name: 'month',
         message: 'Elija el mes a facturar, usaremos el primer y ultimo dia de cada mes como fechas de facturacion de servicios" ',
         choices: ['ENERO','FEBRERO','MARZO','ARBIL','MAYO','JUNIO','AGOSTO'],
       },)
-
+      userData.month = monthData.month
+      console.log(userData.month)
     }
-   var clientTypeData =  await inquirer.prompt({
-          id:'month',
+    var clientTypeData =  await inquirer.prompt({
             type: 'list',
-            name: 'anonInvoice',
+            name: 'client_info_type',
             message: 'Elija tipo de cliente"  :',
             choices: [WITH_CUIT ,NOT_NOMINATED] },)
+
+      userData.clientInvoiceType = clientTypeData.client_info_type
       
-        if(clientTypeData.anonInvoice == WITH_CUIT){
+        if(clientTypeData.client_info_type == WITH_CUIT){
          var client_taxId = await inquirer.prompt({
             type: 'input',
             name: 'cuit_cul',
             message: 'Ingrese cuit/cuil a facturar',
           })
+         userData.clientTaxId = client_taxId.cuit_cul
+
       }
+      console.log(userData)
   }
 
 }
