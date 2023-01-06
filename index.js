@@ -1,12 +1,8 @@
 #!/usr/bin/env node.
 
-// NRO PUNTO VENTA - NUMBER OPTION
-//  SERVIVIOS , PRODUCTOS Y SERVICIOS // EMUM
 const inquirer = require('inquirer')
 const chalk = require('chalk')
 const figlet = require('figlet')
-//const shell = require('shelljs')
-
 const MANUAL = 'MANUAL CON WIZARD'
 const AUTOMATIC = 'AUTOMATICA CON .ENV CONFIGURATION'
 SERVICE_CONCEPT ='SERVICIOS'
@@ -14,14 +10,7 @@ PRODUCT_CONCEPTO = 'PRODUCTOS'
 BOTH_CONCEPTS = 'AMBOS'
 WITH_CUIT  ='CON CUIT/CUIL'
 NOT_NOMINATED ='NO NOMINADA'
-const CLIENT_TAX_ID = 'INGRESE CUIT A FACTURAR'
-const INITIAL_DATE = 'INGRESE INICIO PERIODO FACTURADO'
-const FINAL_DATE = 'INGRESE INICIO PERIODO FACTURADO'
-const EXPIRES_DATE =  'FECHA DE VENCIMIENTO PARA SU FACTURA'
 
-
-// const { generar } = require('./generar');
-// const { listar } = require('./listar');
 const userDataQuestions = [{
     type: 'input',
     name: 'userName',
@@ -68,25 +57,7 @@ Date.prototype.addDaysToDate = function (days) {
 }  
 
 const generateFactura = async (userData) => {
-   
-  console.log(userData)
-      // prompt.emit(':new', 'month', 'Ingrese mes:');
-
-    // prompt.on('month', function(data){
-    //   data = data -1;
-    //   var date = new Date();
-    //   var firstDay = new Date(date.getFullYear(), parseInt(data), 1);
-    //   var lastDay = new Date(date.getFullYear(),  parseInt(data) + 1, 0);
-    //   result.initDate = firstDay.toLocaleDateString('en-GB');
-    //   result.lastDate = lastDay.toLocaleDateString('en-GB');
-    //   result.payDate =  lastDay.addDaysToDate(10).toLocaleDateString('en-GB');
-    //    prompt.emit(':new', 'client_cuilt', 'Cuil a facturar:');
-    // });
     const playwright = require('playwright')
-    const inquirer = require('inquirer')
-    const chalk = require('chalk')
-    const figlet = require('figlet')
-    const uuid = require('uuid')
     const {
       login,
       randomDetalle,
@@ -96,8 +67,6 @@ const generateFactura = async (userData) => {
       saveToCSV,
     } = require('./helper.js')
   
-  
-    var isWizard = true
     const pointSalesNr = userData.sales_point || process.env.N_PUNTO_VENTA
     const userName = userData.userName || process.env.USER_NAME
     var month = userData.month || null
@@ -177,10 +146,11 @@ const generateFactura = async (userData) => {
     await facturadorPage.click('input[value="Continuar >"]')
     await facturadorPage.waitForTimeout(1000)
   
+    //TODO: parse data from wizard
     // // Pagina
     await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '001')
     await facturadorPage.waitForTimeout(1000)
-    await facturadorPage.fill('textarea[name="detalleDescripcion"]', detalle)
+    await facturadorPage.fill('textarea[name="detalleDescripcion"]', 'detalle')
     await facturadorPage.waitForTimeout(1000)
     await facturadorPage.fill('input[name="detalleCantidad"]', cantidad)
     await facturadorPage.waitForTimeout(1000)
@@ -225,7 +195,6 @@ const generateFactura = async (userData) => {
   
 }
 const run = async () => {
-  
   // show script introduction
   // ask questions
   var result = await inquirer.prompt(    {
@@ -274,10 +243,8 @@ const run = async () => {
       
   }
 }
+
 init();
 run();
-
-
-
 
 
