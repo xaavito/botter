@@ -95,8 +95,6 @@ const getDatesfromOneYearBack = () => {
  * @returns {Promise<void>}
  */
 async function login(page,userData) {
-  console.log("login data")
-  console.log(userData)
   await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml')
   await page.waitForSelector('input[name="F1:username"]')
   await page.fill('input[name="F1:username"]', userData.userTaxID || process.env.USER_CUIL)
