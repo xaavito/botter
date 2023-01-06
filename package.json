@@ -4,10 +4,16 @@
   "description": "Bot for doing complicated stuff easy",
   "main": "index.js",
   "dependencies": {
+    "chalk": "^2.4.1",
+    "csv-parser": "^3.0.0",
     "csv-write-stream": "^2.0.0",
     "dotenv": "^16.0.1",
+    "figlet": "^1.2.0",
+    "inquirer": "^6.0.0",
     "playwright": "^1.22.2",
-    "uuid": "^8.3.2"
+    "shelljs": "^0.8.2",
+    "uuid": "^8.3.2",
+    "datejs": "^1.0.0-rc3"
   },
   "scripts": {
     "test": "node -r dotenv/config test.js",
@@ -36,6 +42,7 @@
     "playwright"
   ],
   "devDependencies": {
+    "es-module-loader": "^2.3.0",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.7.1"
