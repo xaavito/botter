@@ -3,6 +3,8 @@ var csvWriter = require('csv-write-stream')
 
 const rounder = (num) => ('0' + num).slice(-2)
 
+const today = new Date()
+
 let detallesArr = JSON.parse(process.env.DETALLES)
 let valoresArr = JSON.parse(process.env.USER_MONTO)
 
@@ -11,22 +13,43 @@ const randomDetalle = () => {
   return detallesArr[random] || 'Servicios'
 }
 
+const sanitizeDateToNoTime = (date) => date.setHours(0, 0, 0, 0)
+
 const randomValor = () => {
   var random = Math.floor(Math.random() * valoresArr.length)
   return valoresArr[random]
 }
 
-const today = new Date()
-
-const dateAsString = () =>
-  `${today.getFullYear()}${rounder(today.getMonth() + 1)}${rounder(
-    today.getDate()
+const dateAsString = (date = today) =>
+  `${date.getFullYear()}${rounder(date.getMonth() + 1)}${rounder(
+    date.getDate()
   )}`
 
-const dateFormatted = () =>
-  `${rounder(today.getDate())}/${rounder(
-    today.getMonth() + 1
-  )}/${today.getFullYear()}`
+const oneYearBefore = () => {
+  let oneYearBefore = new Date()
+  oneYearBefore.setDate(today.getDate() - 364)
+  return oneYearBefore;
+}
+
+const beginingOfCurrentMonth = () => {
+  let beginingOfMonth = new Date()
+  beginingOfMonth.setDate(1)
+  sanitizeDateToNoTime(beginingOfMonth);
+  return beginingOfMonth;
+}
+
+const dateFormatted = (date = today) =>
+  `${rounder(date.getDate())}/${rounder(
+    date.getMonth() + 1
+  )}/${date.getFullYear()}`
+
+// DD/MM/YYYY
+const stringDateToActualDate = (dateAsString) =>
+  new Date(
+    dateAsString.slice(6, 10),
+    dateAsString.slice(3, 5) - 1,
+    dateAsString.slice(0, 2)
+  )
 
 // Dado '$ 20.000,00' devuelve 20000
 const sanitizeNumber = (number) => {
@@ -156,4 +179,8 @@ module.exports = {
   addDays,
   today,
   getDatesfromOneYearBack,
+  oneYearBefore,
+  stringDateToActualDate,
+  sanitizeDateToNoTime,
+  beginingOfCurrentMonth
 }

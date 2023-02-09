@@ -8,6 +8,7 @@ const figlet = require('figlet')
 const GENERAR = 'generate factura random'
 const LISTAR = 'listar facturas realizadas a la fecha'
 const FACTURACION_MENSUAL = 'Ver Facturacion Mensual'
+const FACTURACION_ANUAL = 'Ver Facturacion Anual'
 
 const { generar } = require('./generar');
 const { listar } = require('./listar');
@@ -30,7 +31,7 @@ const askQuestions = async () => {
       type: 'list',
       name: 'selection',
       message: 'Que queres que Botter haga por ti??',
-      choices: [GENERAR, LISTAR, FACTURACION_MENSUAL],
+      choices: [GENERAR, LISTAR, FACTURACION_MENSUAL, FACTURACION_ANUAL],
     },
   ]
   return inquirer.prompt(questions)
@@ -47,6 +48,9 @@ const callToAction = async (action) => {
   if (action === FACTURACION_MENSUAL) {
     await facturacionMensual();
   }
+  if (action === FACTURACION_ANUAL) {
+    await facturacionAnual();
+  }
   return values;
 }
 
@@ -62,13 +66,11 @@ const success = async (result, values) => {
 }
 
 const facturacionMensual = async () => {
-  const invoicesList = await listar(true);
-  console.log('afuera', invoicesList)
+  const invoicesList = await listar('mensual');
+}
 
-  invoicesList.forEach(element => {
-    const fechaFormateada = new Date(element.Fecha);
-    console.log(fechaFormateada.getMonth)
-  });
+const facturacionAnual = async () => {
+  const invoicesList = await listar('anual');
 }
 
 const run = async () => {
