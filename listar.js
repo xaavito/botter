@@ -9,6 +9,8 @@ const {
   beginingOfCurrentMonth,
 } = require('./helper.js')
 
+const logger = require('./logger');
+
 const csvFilename = `${process.env.USER_CUIL}.csv`
 
 const listar = async (tipoTotal) => {
@@ -34,7 +36,7 @@ const listar = async (tipoTotal) => {
             }
           }
         })
-        console.log(
+        logger.info(
           'Total Anualizado: $' +
             monto +
             ' entre ' +
@@ -56,7 +58,7 @@ const listar = async (tipoTotal) => {
             }
           }
         })
-        console.log(
+        logger.info(
           'Total Mensual: $' +
             monto +
             ' entre ' +

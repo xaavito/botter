@@ -12,8 +12,11 @@ const FACTURACION_ANUAL = 'Ver Facturacion Anual'
 
 const { generar } = require('./generar');
 const { listar } = require('./listar');
+const logger = require('./logger');
 
 const init = () => {
+  // Si usamos el logger sale raro...
+  // eslint-disable-next-line no-console
   console.log(
     chalk.green(
       figlet.textSync('Bottteeeerrr', {
@@ -41,6 +44,8 @@ const callToAction = async (action) => {
   let values
   if (action === GENERAR) {
     values = await generar();
+    // corremos ademas que nos muestre cuanto viene facturando mes a mes
+    await facturacionMensual();
   }
   if (action === LISTAR) {
     await listar();
@@ -55,22 +60,22 @@ const callToAction = async (action) => {
 }
 
 const success = async (result, values) => {
-  console.log(
+  logger.info(
     chalk.white.bgGreen.bold(`Listo! accion finalizada!!!! ${result}`)
   )
   if (result.includes('generate')) {
-    console.log(
+    logger.info(
       chalk.white.bgGreen.bold(`Factura generada el dia ${values.fecha}, detalle ${values.detalle}, valor ${values.valor}`)
     )
   }
 }
 
 const facturacionMensual = async () => {
-  const invoicesList = await listar('mensual');
+  await listar('mensual');
 }
 
 const facturacionAnual = async () => {
-  const invoicesList = await listar('anual');
+  await listar('anual');
 }
 
 const run = async () => {
@@ -78,7 +83,7 @@ const run = async () => {
   init()
   // ask questions
   const { selection } = await askQuestions();
-  console.log(
+  logger.info(
     chalk.white.bgRed.bold(`Realizando accion ${selection}, por favor espere....`)
   )
   // do stuff with input

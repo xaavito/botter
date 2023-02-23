@@ -6,7 +6,9 @@ const {
   saveToCSV
 } = require('./helper.js')
 
-const playwright = require('playwright')
+const playwright = require('playwright');
+
+const logger = require('./logger');
 
 async function main() {
   // disable headless to see the browser's action
@@ -36,7 +38,7 @@ async function main() {
     await navigationPromise
     await facturadorPage.waitForTimeout(2000)
   } catch (error) {
-    console.log('Sitio de la afip lento. Reintentar.')
+    logger.warn('Sitio de la afip lento. Reintentar.')
     throw error
   }
   await facturadorPage.click('text=Emitidos')
@@ -104,7 +106,7 @@ async function main() {
     await facturadorPage.waitForTimeout(1000)
   }
 
-  console.log(
+  logger.info(
     `Total facturado desde ${datesArr[0].from} hasta ${
       datesArr.slice(-1)[0].to
     }: $${totalAnual}`

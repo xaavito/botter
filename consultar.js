@@ -31,7 +31,6 @@ async function main() {
 
   let pages = await context.pages()
   const facturadorPage = pages[1]
-  //console.log(pages)
 
   // Pagina
   await navigationPromise
