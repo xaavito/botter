@@ -7,11 +7,13 @@ let detallesArr = JSON.parse(process.env.DETALLES)
 let valoresArr = JSON.parse(process.env.USER_MONTO)
 
 const randomDetalle = () => {
+  if(detallesArr.length == 1)return detallesArr[0]
   var random = Math.floor(Math.random() * detallesArr.length)
   return detallesArr[random] || 'Servicios'
 }
 
 const randomValor = () => {
+  if(valoresArr.length == 1)return valoresArr[0]
   var random = Math.floor(Math.random() * valoresArr.length)
   return valoresArr[random]
 }

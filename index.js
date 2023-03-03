@@ -69,11 +69,12 @@ const generateFactura = async (userData) => {
   
     const pointSalesNr = userData.sales_point || process.env.N_PUNTO_VENTA
     const userName = userData.userName || process.env.USER_NAME
-    var month = userData.month || null
+    var month = userData.month || process.env.MONTH
+    const valor = userData.unitValue || randomValor()
+    const cantidad = userData.quantity || process.env.QUANTITY
+    const service_detail = userData.service_detail || randomDetalle()
 
-    const valor = userData.amount || process.env.AMOUNT
-    const cantidad = '2'
-    const clientTaxId = userData.clientTaxId
+    const clientTaxId = userData.clientTaxId || process.env.CLIENT_CUIL
   
     // disable headless to see the browser's action
     const browser = await playwright.chromium.launch({
@@ -100,6 +101,8 @@ const generateFactura = async (userData) => {
     const facturadorPage = pages[1]
   
     // Pagina
+    await facturadorPage.waitForTimeout(1000)
+
     await facturadorPage.click(`input[value="${userName}"]`)
   
     // Pagina
@@ -150,7 +153,7 @@ const generateFactura = async (userData) => {
     // // Pagina
     await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '001')
     await facturadorPage.waitForTimeout(1000)
-    await facturadorPage.fill('textarea[name="detalleDescripcion"]', 'detalle')
+    await facturadorPage.fill('textarea[name="detalleDescripcion"]', service_detail)
     await facturadorPage.waitForTimeout(1000)
     await facturadorPage.fill('input[name="detalleCantidad"]', cantidad)
     await facturadorPage.waitForTimeout(1000)
@@ -159,7 +162,7 @@ const generateFactura = async (userData) => {
     await facturadorPage.click('input[value="Continuar >"]')
     await facturadorPage.waitForTimeout(1000)
   
-    //confirmacion
+    // confirmacion
   //   await facturadorPage.evaluate(
   //     () =>
   //       // eslint-disable-next-line no-undef
@@ -206,7 +209,7 @@ const run = async () => {
   },)
 
   if(result.selection == AUTOMATIC){
-    console.log(result.selection)
+    generateFactura({})
   }
   if(result.selection == MANUAL){
     var userData = await inquirer.prompt(userDataQuestions)
@@ -221,6 +224,14 @@ const run = async () => {
       },)
       userData.month = monthData.month.split('-')[0];
       console.log(userData.month)
+
+      var detailQuestion =  await inquirer.prompt({
+        type: 'input',
+        name: 'service_detail',
+        message: 'Detalle de servicio"  :',
+         },)
+
+      userData.service_detail = detailQuestion.service_detail
     }
     var clientTypeData =  await inquirer.prompt({
             type: 'list',
