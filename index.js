@@ -198,6 +198,7 @@ const generateFactura = async (userData) => {
   
 }
 const run = async () => {
+  const { getMonths } = require('./helper.js')
   // show script introduction
   // ask questions
   var result = await inquirer.prompt(    {
@@ -220,7 +221,7 @@ const run = async () => {
         type: 'list',
         name: 'month',
         message: 'Elija el mes a facturar, usaremos el primer y ultimo dia de cada mes como fechas de facturacion de servicios" ',
-        choices: ['1-ENERO','2-FEBRERO','3-MARZO','4-ARBIL','5-MAYO','6-JUNIO','7-AGOSTO'],
+        choices: getMonths(),
       },)
       userData.month = monthData.month.split('-')[0];
       console.log(userData.month)

@@ -62,6 +62,10 @@ const addDays = (date, numOfDays) => {
   return new Date(myDate.setDate(myDate.getDate() + numOfDays))
 }
 
+
+const getMonths = () => { 
+  return ['1-ENERO','2-FEBRERO','3-MARZO','4-ARBIL','5-MAYO','6-JUNIO','7-JULIO','8-SEPTIEMBRE','9-SEPTIEMBRE','10-OCTUBRE','11-NOVIEMBRE','12-DICIEMBRE'];
+}
 /**
  * Devuelve array de fechas de 27 días empezando de 1 año atrás desde hoy.
  * Ej: { from: 2021-10-31T01:34:49.818Z, to: 2021-11-27T01:34:49.818Z }
@@ -156,6 +160,7 @@ module.exports = {
   getFormatedDate,
   subtractYears,
   addDays,
+  getMonths,
   today,
   getDatesfromOneYearBack,
 }
