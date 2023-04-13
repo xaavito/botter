@@ -11,6 +11,7 @@ Basado en:
 
 ###
 
+# Setup
 Crear un archivo `.env` con la siguiente informacion:
 
 ```
@@ -28,6 +29,7 @@ N_PUNTO_VENTA='1`
 Reemplazar informacion con la informacion propia.
 
 
+# Comandos disponibles:
 
 ## Generar Factura
 
@@ -35,8 +37,35 @@ Reemplazar informacion con la informacion propia.
 npm run generar
 ```
 
-## Consultar facturacion del mes
+## Consultar facturación del mes
 
 ```
 npm run consultar
+```
+
+## Generar 1 o más facturas
+
+Para este comando se requiere una configuration adicional donde especificamos que facturas se van a generar:
+
+1. Crear en la carpeta `Multigenerador` un archivo `facturas.json` con el siguiente formato:
+```
+[
+  {
+    "concepto": "2",
+    "descripcion": "Canje en instagram",
+    "monto": "10000"
+  },
+  {
+    "concepto": "2",
+    "descripcion": "Onlyfans de pies",
+    "monto": "20000"
+  }
+  ...
+]
+```
+Cada una de las entradas, es una factura que vamos a generar.
+
+2. ejecutar:
+```
+npm run multi-generar
 ```
