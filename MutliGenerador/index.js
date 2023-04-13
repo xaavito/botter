@@ -3,8 +3,8 @@
 // minimum node version 8 for async / await feature
 
 const playwright = require('playwright');
-const { rounder } = require('./helper.js');
-const { login } = require("./helper");
+const { rounder } = require('../helper.js');
+const { login } = require("../helper");
 let facturas;
 
 // Carga dinamicamente el archivo de definiciones
