@@ -3,3 +3,7 @@ node_modules
 .env
 package-lock.json
 downloads/*
+.DS_Store
+
+
+.idea/
