@@ -15,6 +15,12 @@ try {
    console.log('No se encontro el archivo facturas.json');
 }
 
+/**
+ *
+ * @param facturadorPage pagina de playrigth
+ * @param factura Configuracion de c/u de las facturas, ver formato en README.md
+ * @return {Promise<void>}
+ */
 async function generarPara(facturadorPage, factura) {
   // Pagina
   await facturadorPage.click('text=Generar Comprobantes');
@@ -80,6 +86,11 @@ async function generarPara(facturadorPage, factura) {
   await facturadorPage.click('input[value="Menú Principal"]');
 }
 
+/**
+ * Se auténtica y abre el RCEL para generar comprobantes.
+ * @param facturas lista de las facturas que se van a generar.
+ * @return {Promise<void>}
+ */
 async function generar(facturas) {
 
   // disable headless to see the browser's action
