@@ -33,6 +33,8 @@ N_PUNTO_VENTA='1'
 
 Reemplazar informacion con la informacion propia.
 
+Las facturas se generarán con una descripcion del servicio facturado random obtenido de `detalles.json`
+
 # Comandos disponibles:
 
 ## Generar Factura
