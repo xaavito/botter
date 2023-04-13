@@ -1,5 +1,13 @@
 node_modules
+
+package-lock.json
+
+# Ignoro archivos de configuracion:
 .env.*
 .env
-package-lock.json
+
+# carpeta de facturas generadas:
 downloads/*
+
+# Muti factura
+MutliGenerador/facturas.json
