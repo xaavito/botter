@@ -1,10 +1,12 @@
 node_modules
-
+.DS_Store
+.idea/
 package-lock.json
 
 # Ignoro archivos de configuracion:
 .env.*
 .env
+*.csv
 
 # carpeta de facturas generadas:
 downloads/*
