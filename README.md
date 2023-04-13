@@ -12,6 +12,7 @@ Basado en:
 ###
 
 # Setup
+
 Renombrar el archivo `.env.example` y modificar la configuracion con sus variables:
 
 ```
@@ -32,9 +33,7 @@ N_PUNTO_VENTA='1'
 
 Reemplazar informacion con la informacion propia.
 
-
 # Comandos disponibles:
-
 
 ## Generar Factura
 
@@ -55,6 +54,7 @@ npm run consultar
 Para este comando se requiere una configuration adicional donde especificamos que facturas se van a generar:
 
 1. Crear en la carpeta `Multigenerador` un archivo `facturas.json` con el siguiente formato:
+
 ```
 [
   {
@@ -70,9 +70,11 @@ Para este comando se requiere una configuration adicional donde especificamos qu
   ...
 ]
 ```
+
 Cada una de las entradas, es una factura que vamos a generar.
 
 2. ejecutar:
+
 ```
 npm run multi-generar
 ```
