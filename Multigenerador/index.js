@@ -1,5 +1,6 @@
 const playwright = require('playwright')
 const { rounder, login } = require('../helper.js')
+const {saveToCSV, dateFormatted} = require("../helper");
 
 let facturas
 
@@ -87,6 +88,9 @@ async function generarPara(facturadorPage, factura) {
   await download.saveAs(
     `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}.pdf`
   )
+
+  saveToCSV(dateFormatted(), factura.detalle, factura.monto)
+
   await facturadorPage.waitForTimeout(1000)
 
   // Volver al menu para generar otro comprobante
