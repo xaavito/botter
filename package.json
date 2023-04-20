@@ -12,7 +12,7 @@
   "scripts": {
     "test": "node -r dotenv/config test.js",
     "generar": "node -r dotenv/config index.js",
-    "multi-generar": "node -r dotenv/config MutliGenerador/index.js",
+    "multi-generar": "node -r dotenv/config Multigenerador/index.js",
     "generar-vep": "node -r dotenv/config generar-vep.js",
     "consultar": "node -r dotenv/config consultar.js",
     "consultar-anual": "node -r dotenv/config consultar-anualizado.js",
