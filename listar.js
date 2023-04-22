@@ -7,6 +7,7 @@ const {
   today,
   sanitizeDateToNoTime,
   beginingOfCurrentMonth,
+  dateFormatted
 } = require('./helper.js')
 
 const logger = require('./logger');
@@ -40,9 +41,9 @@ const listar = async (tipoTotal) => {
           'Total Anualizado: $' +
             monto +
             ' entre ' +
-            oneYearBefore() +
+            dateFormatted(oneYearBefore()) +
             ' y ' +
-            today
+            dateFormatted(today)
         )
       }
       if (tipoTotal === 'mensual') {
@@ -62,9 +63,9 @@ const listar = async (tipoTotal) => {
           'Total Mensual: $' +
             monto +
             ' entre ' +
-            beginingOfCurrentMonth(sanitizeDateToNoTime) +
+            dateFormatted(beginingOfCurrentMonth(sanitizeDateToNoTime)) +
             ' y ' +
-            today
+            dateFormatted(today)
         )
       }
     })

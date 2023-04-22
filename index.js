@@ -10,11 +10,11 @@ const LISTAR = 'listar facturas realizadas a la fecha'
 const FACTURACION_MENSUAL = 'Ver Facturacion Mensual'
 const FACTURACION_ANUAL = 'Ver Facturacion Anual'
 
-const { generar } = require('./generar');
-const { listar } = require('./listar');
-const logger = require('./logger');
+const { generar } = require('./generar')
+const { listar } = require('./listar')
+const logger = require('./logger')
 
-const init = () => {
+const init = async () => {
   // Si usamos el logger sale raro...
   // eslint-disable-next-line no-console
   console.log(
@@ -34,7 +34,7 @@ const askQuestions = async () => {
       type: 'list',
       name: 'selection',
       message: 'Que queres que Botter haga por ti??',
-      choices: [GENERAR, LISTAR, FACTURACION_MENSUAL, FACTURACION_ANUAL],
+      choices: [GENERAR, FACTURACION_MENSUAL, FACTURACION_ANUAL],
     },
   ]
   return inquirer.prompt(questions)
@@ -43,20 +43,20 @@ const askQuestions = async () => {
 const callToAction = async (action) => {
   let values
   if (action === GENERAR) {
-    values = await generar();
+    values = await generar()
     // corremos ademas que nos muestre cuanto viene facturando mes a mes
-    await facturacionMensual();
+    await facturacionMensual()
   }
   if (action === LISTAR) {
-    await listar();
+    await listar()
   }
   if (action === FACTURACION_MENSUAL) {
-    await facturacionMensual();
+    await facturacionMensual()
   }
   if (action === FACTURACION_ANUAL) {
-    await facturacionAnual();
+    await facturacionAnual()
   }
-  return values;
+  return values
 }
 
 const success = async (result, values) => {
@@ -65,26 +65,37 @@ const success = async (result, values) => {
   )
   if (result.includes('generate')) {
     logger.info(
-      chalk.white.bgGreen.bold(`Factura generada el dia ${values.fecha}, detalle ${values.detalle}, valor ${values.valor}`)
+      chalk.white.bgGreen.bold(
+        `Factura generada el dia ${values.fecha}, detalle ${values.detalle}, valor ${values.valor}`
+      )
     )
   }
 }
 
 const facturacionMensual = async () => {
-  await listar('mensual');
+  await listar('mensual')
 }
 
 const facturacionAnual = async () => {
-  await listar('anual');
+  await listar('anual')
 }
 
 const run = async () => {
+  // resumen
+  //await facturacionAnual()
+  //await facturacionMensual()
+  //logger.info(
+  //`Tener en cuenta el tope mensual por favorrrr ${process.env.TOPE_FACTURACION_MENSUAL}`
+  //)
+
   // show script introduction
-  init()
+  await init()
   // ask questions
-  const { selection } = await askQuestions();
+  const { selection } = await askQuestions()
   logger.info(
-    chalk.white.bgRed.bold(`Realizando accion ${selection}, por favor espere....`)
+    chalk.white.bgRed.bold(
+      `Realizando accion ${selection}, por favor espere....`
+    )
   )
   // do stuff with input
   // maybe we should primisfy all and return actual status
@@ -93,4 +104,4 @@ const run = async () => {
   await success(selection, result)
 }
 
-run();
+run()
