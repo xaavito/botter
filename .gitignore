@@ -1,6 +1,15 @@
 node_modules
-.env
 .DS_Store
+.idea/
 package-lock.json
-downloads/*
+
+# Ignoro archivos de configuracion:
+.env.*
+.env
 *.csv
+
+# carpeta de facturas generadas:
+downloads/*
+
+# Muti factura
+MutliGenerador/facturas.json
