@@ -18,6 +18,7 @@ async function generar() {
   const browser = await playwright.chromium.launch({
     headless: false,
     args: ['--disable-dev-shm-usage'],
+    //channel: 'chrome', opens chrome!
   })
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
@@ -105,7 +106,7 @@ async function generar() {
 
   await facturadorPage.waitForTimeout(1000)
 
-  await browser.close();
+  await browser.close()
 
   return { detalle, valor, fecha: dateFormatted() }
 }
