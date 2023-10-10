@@ -1,106 +1,63 @@
 const playwright = require('playwright')
 const {
-  login,
-  randomDetalle,
-  randomValor,
-  dateAsString,
   dateFormatted,
   saveToCSV,
 } = require('./helper.js')
 
-const uuid = require('uuid')
+const { login } = require('./pages/login.js')
+const { verTodos } = require('./pages/ver_todos.js')
+const { comprobantesEnLinea } = require('./pages/comprobantes_en_linea.js')
+const { miPagina } = require('./pages/mi_pagina.js')
+const { generarComprobantes } = require('./pages/generar_comprobantes.js')
+const { seleccionarPuntoVenta } = require('./pages/seleccionar_pto_vta.js')
+
+const { continuar } = require('./pages/continuar.js')
+const { cargarConcepto } = require('./pages/cargar_concepto.js')
+const { cargarIVAReceptor } = require('./pages/cargar_iva_receptor.js')
+const { cargarItemFactura } = require('./pages/cargar_item_factura.js')
+const { confirmar } = require('./pages/confirmar.js')
+const { imprimirFactura } = require('./pages/imprimir_factura.js')
 
 async function generar() {
-  const detalle = randomDetalle()
-  const valor = randomValor()
+  let detalle
+  let valor
 
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,
     args: ['--disable-dev-shm-usage'],
-    //channel: 'chrome', opens chrome!
   })
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 
-  const navigationPromise = page.waitForNavigation({
-    waitUntil: 'domcontentloaded',
-  })
   await page.setDefaultNavigationTimeout(0)
 
   await login(page)
 
-  await navigationPromise
-  await page.click('text=Ver todos')
-  await page.waitForTimeout(1000)
-  await page.click('text=Comprobantes en línea')
-  await page.waitForTimeout(3000)
+  await verTodos(page)
+
+  await comprobantesEnLinea(page)
 
   let pages = await context.pages()
   const facturadorPage = pages[1]
 
-  // Pagina
-  await facturadorPage.click(`input[value="${process.env.USER_NAME}"]`)
+  await miPagina(facturadorPage)
 
-  // Pagina
-  await facturadorPage.click('text=Generar Comprobantes')
-  await facturadorPage.waitForTimeout(1000)
-  // Pagina
-  await facturadorPage.selectOption(
-    'select[name="puntoDeVenta"]',
-    process.env.N_PUNTO_VENTA || '1'
-  )
+  await generarComprobantes(facturadorPage)
 
-  await facturadorPage.waitForTimeout(1000)
-  await facturadorPage.click('input[value="Continuar >"]')
-  await facturadorPage.waitForTimeout(1000)
-  // Pagina
-  await facturadorPage.selectOption('select[name="idConcepto"]', '2')
-  await facturadorPage.waitForTimeout(1000)
-  await facturadorPage.click('input[value="Continuar >"]')
-  // Pagina
-  await facturadorPage.selectOption('select[name="idIVAReceptor"]', '5')
-  await facturadorPage.waitForTimeout(1000)
-  await facturadorPage.click('input[name="formaDePago"]')
-  await facturadorPage.click('input[value="Continuar >"]')
-  await facturadorPage.waitForTimeout(1000)
-  // Pagina
-  await facturadorPage.fill('input[name="detalleCodigoArticulo"]', '1')
-  await facturadorPage.waitForTimeout(1000)
+  await seleccionarPuntoVenta(facturadorPage)
 
-  await facturadorPage.fill('textarea[name="detalleDescripcion"]', detalle)
-  await facturadorPage.waitForTimeout(1000)
-  await facturadorPage.fill('input[name="detallePrecio"]', valor)
-  await facturadorPage.waitForTimeout(1000)
-  await facturadorPage.click('input[value="Continuar >"]')
-  await facturadorPage.waitForTimeout(1000)
+  await continuar(facturadorPage)
 
-  //confirmacion
-  await facturadorPage.evaluate(
-    () =>
-      // eslint-disable-next-line no-undef
-      (window.confirm = function () {
-        return true
-      })
-  )
+  await cargarConcepto(facturadorPage)
 
-  await facturadorPage.click('input[value="Confirmar Datos..."]')
+  await cargarIVAReceptor(facturadorPage)
 
-  await facturadorPage.waitForTimeout(1000)
+  ({ detalle, valor } = await cargarItemFactura(facturadorPage))
 
-  // Imprimir factura
-  const [download] = await Promise.all([
-    // Start waiting for the download
-    facturadorPage.waitForEvent('download'),
-    // Perform the action that initiates download
-    facturadorPage.click('input[value="Imprimir..."]'),
-  ])
+  await confirmar(facturadorPage)
 
-  await download.saveAs(
-    `./downloads/factura-${
-      process.env.USER_CUIL
-    }-${dateAsString()}-${uuid.v1()}.pdf`
-  )
+  await imprimirFactura(facturadorPage)
 
   saveToCSV(dateFormatted(), detalle, valor)
 

@@ -28,14 +28,14 @@ const dateAsString = (date = today) =>
 const oneYearBefore = () => {
   let oneYearBefore = new Date()
   oneYearBefore.setDate(today.getDate() - 364)
-  return oneYearBefore;
+  return oneYearBefore
 }
 
 const beginingOfCurrentMonth = () => {
   let beginingOfMonth = new Date()
   beginingOfMonth.setDate(1)
-  sanitizeDateToNoTime(beginingOfMonth);
-  return beginingOfMonth;
+  sanitizeDateToNoTime(beginingOfMonth)
+  return beginingOfMonth
 }
 
 const dateFormatted = (date = today) =>
@@ -112,22 +112,6 @@ const getDatesfromOneYearBack = () => {
 }
 
 /**
- * Autentica en la pagina del afip completando user and password
- * Usa las credenciales de .env
- * @param page {Page}
- * @returns {Promise<void>}
- */
-async function login(page) {
-  await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml')
-  await page.waitForSelector('input[name="F1:username"]')
-  await page.fill('input[name="F1:username"]', process.env.USER_CUIL)
-  await page.click('input[name="F1:btnSiguiente"]')
-  await page.waitForSelector('input[name="F1:password"]', { visible: true })
-  await page.fill('input[name="F1:password"]', process.env.USER_PASS)
-  await page.click('input[name="F1:btnIngresar"]')
-}
-
-/**
  * Guarda facturas generadas a CSV, la crea o agrega
  * @param {date} fecha
  * @param {string} item
@@ -167,7 +151,6 @@ function saveToCSV(fecha, item, monto, fileName = false) {
 
 module.exports = {
   rounder,
-  login,
   randomDetalle,
   randomValor,
   saveToCSV,
@@ -182,5 +165,5 @@ module.exports = {
   oneYearBefore,
   stringDateToActualDate,
   sanitizeDateToNoTime,
-  beginingOfCurrentMonth
+  beginingOfCurrentMonth,
 }
