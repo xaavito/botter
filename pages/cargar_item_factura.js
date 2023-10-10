@@ -1,6 +1,6 @@
 const { randomDetalle, randomValor } = require('../helper.js')
 
-async function cargarItemFactura(page) {
+const cargarItemFactura = async (page) => {
   const detalle = randomDetalle()
   const valor = randomValor()
 

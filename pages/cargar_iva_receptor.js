@@ -1,4 +1,4 @@
-async function cargarIVAReceptor(page) {
+const cargarIVAReceptor = async (page) => {
   await page.selectOption('select[name="idIVAReceptor"]', '5')
   await page.waitForTimeout(1000)
   await page.click('input[name="formaDePago"]')

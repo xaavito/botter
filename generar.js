@@ -1,8 +1,5 @@
 const playwright = require('playwright')
-const {
-  dateFormatted,
-  saveToCSV,
-} = require('./helper.js')
+const { dateFormatted, saveToCSV } = require('./helper.js')
 
 const { login } = require('./pages/login.js')
 const { verTodos } = require('./pages/ver_todos.js')
@@ -53,19 +50,19 @@ async function generar() {
 
   await cargarIVAReceptor(facturadorPage)
 
-  ({ detalle, valor } = await cargarItemFactura(facturadorPage))
+  const results = await cargarItemFactura(facturadorPage)
 
   await confirmar(facturadorPage)
 
   await imprimirFactura(facturadorPage)
 
-  saveToCSV(dateFormatted(), detalle, valor)
+  saveToCSV(dateFormatted(), results.detalle, results.valor)
 
   await facturadorPage.waitForTimeout(1000)
 
   await browser.close()
 
-  return { detalle, valor, fecha: dateFormatted() }
+  return { detalle: results.detalle, valor: results.valor, fecha: dateFormatted() }
 }
 
 module.exports = { generar }

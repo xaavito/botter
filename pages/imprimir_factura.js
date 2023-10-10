@@ -1,7 +1,7 @@
 const uuid = require('uuid')
 const { dateAsString } = require('../helper.js')
 
-async function cargarConcepto(page) {
+const imprimirFactura = async (page) => {
   // Imprimir factura
   const [download] = await Promise.all([
     // Start waiting for the download
@@ -18,5 +18,5 @@ async function cargarConcepto(page) {
 }
 
 module.exports = {
-  cargarConcepto,
+  imprimirFactura,
 }
