@@ -16,9 +16,6 @@ const { confirmar } = require('./pages/confirmar.js')
 const { imprimirFactura } = require('./pages/imprimir_factura.js')
 
 async function generar() {
-  let detalle
-  let valor
-
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,
