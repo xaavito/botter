@@ -48,7 +48,6 @@ async function generar() {
   await cargarIVAReceptor(facturadorPage)
 
   const results = await cargarItemFactura(facturadorPage)
-  console.log(results)
 
   await confirmar(facturadorPage)
 
