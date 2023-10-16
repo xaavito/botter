@@ -7,10 +7,10 @@ const {
   today,
   sanitizeDateToNoTime,
   beginingOfCurrentMonth,
-  dateFormatted
+  dateFormatted,
 } = require('./helper.js')
 
-const logger = require('./logger');
+const logger = require('./logger')
 
 const csvFilename = `${process.env.USER_CUIL}.csv`
 
@@ -22,7 +22,6 @@ const listar = async (tipoTotal) => {
       invoices.push(row)
     })
     .on('end', () => {
-
       let monto = 0
       if (tipoTotal === 'anual') {
         invoices.forEach((factura) => {
@@ -33,7 +32,7 @@ const listar = async (tipoTotal) => {
               sanitizeDateToNoTime(stringDateToActualDate(factura.Fecha)) >=
                 sanitizeDateToNoTime(oneYearBefore(sanitizeDateToNoTime))
             ) {
-              monto += parseFloat(factura.Monto)
+              monto += parseFloat(factura.Monto || '0')
             }
           }
         })
@@ -53,9 +52,11 @@ const listar = async (tipoTotal) => {
               sanitizeDateToNoTime(stringDateToActualDate(factura.Fecha)) <=
                 sanitizeDateToNoTime(today) &&
               sanitizeDateToNoTime(stringDateToActualDate(factura.Fecha)) >=
-                sanitizeDateToNoTime(beginingOfCurrentMonth(sanitizeDateToNoTime))
+                sanitizeDateToNoTime(
+                  beginingOfCurrentMonth(sanitizeDateToNoTime)
+                )
             ) {
-              monto += parseFloat(factura.Monto)
+              monto += parseFloat(factura.Monto || '0')
             }
           }
         })
