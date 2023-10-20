@@ -20,6 +20,7 @@ async function generar() {
   const browser = await playwright.chromium.launch({
     headless: false,
     args: ['--disable-dev-shm-usage'],
+    ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
   })
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
@@ -59,7 +60,11 @@ async function generar() {
 
   await browser.close()
 
-  return { detalle: results.detalle, valor: results.valor, fecha: dateFormatted() }
+  return {
+    detalle: results.detalle,
+    valor: results.valor,
+    fecha: dateFormatted(),
+  }
 }
 
 module.exports = { generar }

@@ -23,7 +23,7 @@ async function main() {
   const browser = await playwright.chromium.launch({
     headless: false,
     args: ['--disable-dev-shm-usage'],
-    //...(process.env.CHROME === 'true' && { channel: 'chrome' }),
+    ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
   })
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
