@@ -138,15 +138,19 @@ function saveToCSV(fecha, item, monto, fileName = false) {
     writer.end()
   }
 
-  // Append some data to CSV the file
-  writer = csvWriter({ sendHeaders: false })
-  writer.pipe(fs.createWriteStream(csvFilename, { flags: 'a' }))
-  writer.write({
-    header1: fecha,
-    header2: item,
-    header3: monto,
-  })
-  writer.end()
+  try {
+    // Append some data to CSV the file
+    writer = csvWriter({ sendHeaders: false })
+    writer.pipe(fs.createWriteStream(csvFilename, { flags: 'a' }))
+    writer.write({
+      header1: fecha,
+      header2: item,
+      header3: monto,
+    })
+    writer.end()
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 module.exports = {
