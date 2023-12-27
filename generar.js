@@ -14,8 +14,10 @@ const { cargarIVAReceptor } = require('./pages/cargar_iva_receptor.js')
 const { cargarItemFactura } = require('./pages/cargar_item_factura.js')
 const { confirmar } = require('./pages/confirmar.js')
 const { imprimirFactura } = require('./pages/imprimir_factura.js')
+const { menuPrincipal } = require('./pages/menu_principal.js')
 
-async function generar() {
+async function generar(cantidadComprobantes = 1) {
+  let resultados = []
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
     headless: false,
@@ -38,33 +40,39 @@ async function generar() {
 
   await miPagina(facturadorPage)
 
-  await generarComprobantes(facturadorPage)
+  for (let index = 1; index <= cantidadComprobantes; index++) {
+    await generarComprobantes(facturadorPage)
 
-  await seleccionarPuntoVenta(facturadorPage)
+    await seleccionarPuntoVenta(facturadorPage)
 
-  await continuar(facturadorPage)
+    await continuar(facturadorPage)
 
-  await cargarConcepto(facturadorPage)
+    await cargarConcepto(facturadorPage)
 
-  await cargarIVAReceptor(facturadorPage)
+    await cargarIVAReceptor(facturadorPage)
 
-  const results = await cargarItemFactura(facturadorPage)
+    const itemsFactura = await cargarItemFactura(facturadorPage)
 
-  await confirmar(facturadorPage)
+    resultados.push({
+      detalle: itemsFactura.detalle,
+      valor: itemsFactura.valor,
+      fecha: dateFormatted(),
+    })
 
-  await imprimirFactura(facturadorPage)
+    await confirmar(facturadorPage)
 
-  saveToCSV(dateFormatted(), results.detalle, results.valor)
+    await imprimirFactura(facturadorPage)
 
-  await facturadorPage.waitForTimeout(1000)
+    saveToCSV(dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
+
+    await facturadorPage.waitForTimeout(1000)
+
+    await menuPrincipal(facturadorPage)
+  }
 
   await browser.close()
 
-  return {
-    detalle: results.detalle,
-    valor: results.valor,
-    fecha: dateFormatted(),
-  }
+  return resultados;
 }
 
 module.exports = { generar }
