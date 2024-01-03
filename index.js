@@ -58,9 +58,9 @@ const callToAction = async (action) => {
       },
     ])
 
-    //console.log(`Generando ${resultado.greeting} facturas`)
-
     resultados = await generar(resultado.greeting)
+
+    await facturacionMensual()
   }
   if (action === LISTAR) {
     await listar()
