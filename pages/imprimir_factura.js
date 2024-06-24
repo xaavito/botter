@@ -11,7 +11,7 @@ const imprimirFactura = async (page) => {
   ])
 
   await download.saveAs(
-    `../downloads/factura-${
+    `./downloads/factura-${
       process.env.USER_CUIL
     }-${dateAsString()}-${uuid.v1()}.pdf`
   )

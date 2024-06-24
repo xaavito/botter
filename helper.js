@@ -3,10 +3,10 @@ var csvWriter = require('csv-write-stream')
 
 const rounder = (num) => ('0' + num).slice(-2)
 
-const today = new Date()
+const today = new Date();
 
-let detallesArr = JSON.parse(process.env.DETALLES)
-let valoresArr = JSON.parse(process.env.USER_MONTO)
+const detallesArr = JSON.parse(process.env.DETALLES);
+const valoresArr = JSON.parse(process.env.USER_MONTO);
 
 const randomDetalle = () => {
   var random = Math.floor(Math.random() * detallesArr.length)
