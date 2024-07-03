@@ -25,7 +25,7 @@ Basado en:
 
 ###
 
-Renombrar el archivo `.env.example` y modificar la configuracion con sus variables:
+Renombrar el archivo `.env.example` a `.env` y modificar la configuracion con sus variables:
 
 ```
 USER_CUIL='00000000000'
