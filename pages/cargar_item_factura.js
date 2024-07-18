@@ -1,8 +1,8 @@
-const { randomDetalle, randomValor } = require('../helper.js')
+const { randomDetalle, randomValorV2 } = require('../helper.js')
 
 const cargarItemFactura = async (page) => {
   const detalle = randomDetalle()
-  const valor = randomValor()
+  const valor = randomValorV2()
 
   await page.fill('input[name="detalleCodigoArticulo"]', '1')
   await page.waitForTimeout(1000)

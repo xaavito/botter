@@ -3,10 +3,12 @@ var csvWriter = require('csv-write-stream')
 
 const rounder = (num) => ('0' + num).slice(-2)
 
-const today = new Date();
+const today = new Date()
 
-const detallesArr = JSON.parse(process.env.DETALLES);
-const valoresArr = JSON.parse(process.env.USER_MONTO);
+const detallesArr = JSON.parse(process.env.DETALLES)
+const valoresArr = JSON.parse(process.env.USER_MONTO)
+const maxTopeValue = process.env.TOPE_FACTURA
+const valoresPorcentualesArr = JSON.parse(process.env.PORCENTAJES_FACTURACION)
 
 const randomDetalle = () => {
   var random = Math.floor(Math.random() * detallesArr.length)
@@ -18,6 +20,18 @@ const sanitizeDateToNoTime = (date) => date.setHours(0, 0, 0, 0)
 const randomValor = () => {
   var random = Math.floor(Math.random() * valoresArr.length)
   return valoresArr[random]
+}
+
+const randomValorV2 = () => {
+  var random = Math.floor(Math.random() * valoresPorcentualesArr.length)
+  const newValue =
+    maxTopeValue - (valoresPorcentualesArr[random] * maxTopeValue) / 100
+  return redondearMiles(newValue).toString();
+}
+
+function redondearMiles(numero) {
+  // Divide el número por 1000, redondea al entero más cercano, y multiplica por 1000
+  return Math.round(numero / 1000) * 1000
 }
 
 const dateAsString = (date = today) =>
@@ -170,4 +184,5 @@ module.exports = {
   stringDateToActualDate,
   sanitizeDateToNoTime,
   beginingOfCurrentMonth,
+  randomValorV2,
 }
