@@ -16,7 +16,12 @@ const { confirmar } = require('./pages/confirmar.js')
 const { imprimirFactura } = require('./pages/imprimir_factura.js')
 const { menuPrincipal } = require('./pages/menu_principal.js')
 
-async function generar(cantidadComprobantes = 1) {
+const { GENERAR, GENERAR_MAS, GENERAR_NOMINADA } = require('./constants')
+
+async function generar({ input = 1, action }) {
+  const cantidadComprobantes = action === GENERAR_MAS ? parseInt(input, 10) : 1
+
+  const comprobanteNominado = action === GENERAR_NOMINADA ? input : null
   let resultados = []
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
@@ -49,9 +54,9 @@ async function generar(cantidadComprobantes = 1) {
 
     await cargarConcepto(facturadorPage)
 
-    await cargarIVAReceptor(facturadorPage)
+    await cargarIVAReceptor(facturadorPage, comprobanteNominado)
 
-    const itemsFactura = await cargarItemFactura(facturadorPage)
+    const itemsFactura = await cargarItemFactura(facturadorPage, comprobanteNominado)
 
     resultados.push({
       detalle: itemsFactura.detalle,
@@ -72,7 +77,7 @@ async function generar(cantidadComprobantes = 1) {
 
   await browser.close()
 
-  return resultados;
+  return resultados
 }
 
 module.exports = { generar }

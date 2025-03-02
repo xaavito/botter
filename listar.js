@@ -8,6 +8,8 @@ const {
   sanitizeDateToNoTime,
   beginingOfCurrentMonth,
   dateFormatted,
+  getFirstDayOfLastYear,
+  getLastDayOfLastYear,
 } = require('./helper.js')
 
 const logger = require('./logger')
@@ -43,6 +45,28 @@ const listar = async (tipoTotal) => {
             dateFormatted(oneYearBefore()) +
             ' y ' +
             dateFormatted(today)
+        )
+      }
+      if (tipoTotal === 'anualAnterior') {
+        invoices.forEach((factura) => {
+          if (factura.Fecha) {
+            if (
+              sanitizeDateToNoTime(stringDateToActualDate(factura.Fecha)) <=
+                sanitizeDateToNoTime(getLastDayOfLastYear()) &&
+              sanitizeDateToNoTime(stringDateToActualDate(factura.Fecha)) >=
+                sanitizeDateToNoTime(getFirstDayOfLastYear())
+            ) {
+              monto += parseFloat(factura.Monto || '0')
+            }
+          }
+        })
+        logger.info(
+          'Total Anualizado: $' +
+            monto +
+            ' entre ' +
+            dateFormatted(getFirstDayOfLastYear()) +
+            ' y ' +
+            dateFormatted(getLastDayOfLastYear())
         )
       }
       if (tipoTotal === 'mensual') {

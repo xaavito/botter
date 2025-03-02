@@ -26,7 +26,7 @@ const randomValorV2 = () => {
   var random = Math.floor(Math.random() * valoresPorcentualesArr.length)
   const newValue =
     maxTopeValue - (valoresPorcentualesArr[random] * maxTopeValue) / 100
-  return redondearMiles(newValue).toString();
+  return redondearMiles(newValue).toString()
 }
 
 function redondearMiles(numero) {
@@ -43,6 +43,18 @@ const oneYearBefore = () => {
   let oneYearBefore = new Date()
   oneYearBefore.setDate(today.getDate() - 364)
   return oneYearBefore
+}
+
+const getFirstDayOfLastYear = () => {
+  const now = new Date()
+  const lastYear = now.getFullYear() - 1
+  return new Date(lastYear, 0, 1) // Año pasado, mes 0 (enero), día 1
+}
+
+const getLastDayOfLastYear = () => {
+  const now = new Date()
+  const lastYear = now.getFullYear() - 1
+  return new Date(lastYear, 11, 31) // Año pasado, mes 0 (enero), día 1
 }
 
 const beginingOfCurrentMonth = () => {
@@ -185,4 +197,6 @@ module.exports = {
   sanitizeDateToNoTime,
   beginingOfCurrentMonth,
   randomValorV2,
+  getFirstDayOfLastYear,
+  getLastDayOfLastYear
 }

@@ -3,14 +3,15 @@
 const inquirer = require('inquirer')
 const chalk = require('chalk')
 const figlet = require('figlet')
-
-//const shell = require('shelljs')
-
-const GENERAR = 'Generar factura random'
-const GENERAR_MAS = 'Generar muchas'
-const LISTAR = 'listar facturas realizadas a la fecha'
-const FACTURACION_MENSUAL = 'Ver Facturacion Mensual'
-const FACTURACION_ANUAL = 'Ver Facturacion Anual'
+const {
+  GENERAR,
+  GENERAR_MAS,
+  GENERAR_NOMINADA,
+  LISTAR,
+  FACTURACION_MENSUAL,
+  FACTURACION_ANUAL,
+  FACTURACION_ANUAL_ANTERIOR,
+} = require('./constants')
 
 const { generar } = require('./generar')
 const { listar } = require('./listar')
@@ -36,7 +37,14 @@ const askQuestions = async () => {
       type: 'list',
       name: 'selection',
       message: 'Que queres que Botter haga por ti??',
-      choices: [GENERAR, GENERAR_MAS, FACTURACION_MENSUAL, FACTURACION_ANUAL],
+      choices: [
+        GENERAR,
+        GENERAR_MAS,
+        GENERAR_NOMINADA,
+        FACTURACION_MENSUAL,
+        FACTURACION_ANUAL,
+        FACTURACION_ANUAL_ANTERIOR,
+      ],
     },
   ]
   return inquirer.prompt(questions)
@@ -45,7 +53,7 @@ const askQuestions = async () => {
 const callToAction = async (action) => {
   let resultados
   if (action === GENERAR) {
-    resultados = await generar()
+    resultados = await generar({ action })
     // corremos ademas que nos muestre cuanto viene facturando mes a mes
     await facturacionMensual()
   }
@@ -58,7 +66,23 @@ const callToAction = async (action) => {
       },
     ])
 
-    resultados = await generar(resultado.greeting)
+    resultados = await generar({ input: resultado.greeting, action })
+
+    await facturacionMensual()
+  }
+  if (action === GENERAR_NOMINADA) {
+    const resultado = await inquirer.prompt([
+      {
+        name: 'greeting',
+        message: 'Escriba CUIT a generar, separado por un espacio el monto',
+        type: 'input',
+      },
+    ])
+
+    resultados = await generar({
+      input: resultado.greeting,
+      action,
+    })
 
     await facturacionMensual()
   }
@@ -70,6 +94,9 @@ const callToAction = async (action) => {
   }
   if (action === FACTURACION_ANUAL) {
     await facturacionAnual()
+  }
+  if (action === FACTURACION_ANUAL_ANTERIOR) {
+    await facturacionAnualAnterior()
   }
   return resultados
 }
@@ -96,6 +123,10 @@ const facturacionMensual = async () => {
 
 const facturacionAnual = async () => {
   await listar('anual')
+}
+
+const facturacionAnualAnterior = async () => {
+  await listar('anualAnterior')
 }
 
 const run = async () => {

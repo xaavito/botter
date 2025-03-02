@@ -1,0 +1,7 @@
+export const GENERAR = 'Generar factura random'
+export const GENERAR_MAS = 'Generar muchas'
+export const GENERAR_NOMINADA = 'Generar Facturada Nominada'
+export const LISTAR = 'listar facturas realizadas a la fecha'
+export const FACTURACION_MENSUAL = 'Ver Facturacion Mensual'
+export const FACTURACION_ANUAL = 'Ver Facturacion Anual'
+export const FACTURACION_ANUAL_ANTERIOR = 'Ver Facturacion Anual Año anterior'
