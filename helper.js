@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 var csvWriter = require('csv-write-stream')
 
 const rounder = (num) => ('0' + num).slice(-2)
@@ -179,6 +180,43 @@ function saveToCSV(fecha, item, monto, fileName = false) {
   }
 }
 
+const writeToFile = async (resultado) => {
+  const filePath = path.join(__dirname, 'usuarios.txt')
+  const fileExists = fs.existsSync(filePath)
+
+  if (!fileExists) {
+    fs.writeFileSync(filePath, '')
+  }
+
+  const fileContent = fs.readFileSync(filePath, 'utf-8')
+  const lines = fileContent.split('\n')
+  const cuitExists = lines.some((line) => line.includes(resultado.cuit))
+
+  if (!cuitExists) {
+    const newLine = `Usuario: ${resultado.user}, CUIT: ${resultado.cuit}\n`
+    fs.appendFileSync(filePath, newLine)
+  }
+}
+
+const readFromFile = () => {
+  const filePath = path.join(__dirname, 'usuarios.txt')
+  const fileExists = fs.existsSync(filePath)
+
+  if (!fileExists) {
+    return []
+  }
+
+  const fileContent = fs.readFileSync(filePath, 'utf-8')
+  const lines = fileContent.split('\n').filter(line => line.trim() !== '')
+
+  return lines.map(line => {
+    const [userPart, cuitPart] = line.split(', ')
+    const name = userPart.split(': ')[1]
+    const value = cuitPart.split(': ')[1]
+    return { name, value }
+  })
+}
+
 module.exports = {
   rounder,
   randomDetalle,
@@ -198,5 +236,7 @@ module.exports = {
   beginingOfCurrentMonth,
   randomValorV2,
   getFirstDayOfLastYear,
-  getLastDayOfLastYear
+  getLastDayOfLastYear,
+  writeToFile,
+  readFromFile
 }

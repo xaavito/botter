@@ -1,5 +1,4 @@
 #!/usr/bin/env node.
-//const input = require('input');
 const inquirer = require('inquirer')
 const chalk = require('chalk')
 const figlet = require('figlet')
@@ -11,11 +10,13 @@ const {
   FACTURACION_MENSUAL,
   FACTURACION_ANUAL,
   FACTURACION_ANUAL_ANTERIOR,
-} = require('./constants')
+  INSERTAR_USUARIO,
+} = require('./constants.js')
 
 const { generar } = require('./generar')
 const { listar } = require('./listar')
 const logger = require('./logger')
+const { writeToFile, readFromFile } = require('./helper.js')
 
 const init = async () => {
   // Si usamos el logger sale raro...
@@ -44,44 +45,56 @@ const askQuestions = async () => {
         FACTURACION_MENSUAL,
         FACTURACION_ANUAL,
         FACTURACION_ANUAL_ANTERIOR,
+        INSERTAR_USUARIO,
       ],
     },
   ]
+
   return inquirer.prompt(questions)
 }
 
 const callToAction = async (action) => {
   let resultados
   if (action === GENERAR) {
-    resultados = await generar({ action })
+    resultados = await generar({ cantidad: 1 })
     // corremos ademas que nos muestre cuanto viene facturando mes a mes
     await facturacionMensual()
   }
   if (action === GENERAR_MAS) {
     const resultado = await inquirer.prompt([
       {
-        name: 'greeting',
+        name: 'cantidadAGenerar',
         message: 'Cuantas necesitas generar?',
         type: 'input',
       },
     ])
 
-    resultados = await generar({ input: resultado.greeting, action })
+    resultados = await generar({ cantidad: resultado.cantidadAGenerar })
 
     await facturacionMensual()
   }
   if (action === GENERAR_NOMINADA) {
-    const resultado = await inquirer.prompt([
-      {
-        name: 'greeting',
-        message: 'Escriba CUIT a generar, separado por un espacio el monto',
-        type: 'input',
-      },
-    ])
+    const questions = []
+    const users = readFromFile()
 
+    console.log(users)
+    questions.push({
+      type: 'list',
+      name: 'user',
+      message: 'Seleccione un usuario:',
+      choices: users,
+    })
+    questions.push({
+      type: 'input',
+      name: 'amount',
+      message: 'Ingrese el monto:',
+    })
+    const datosNomindados = await inquirer.prompt(questions)
+
+    //console.log('resultado', resultado)
     resultados = await generar({
-      input: resultado.greeting,
-      action,
+      cantidad: 1,
+      datosNomindados,
     })
 
     await facturacionMensual()
@@ -97,6 +110,24 @@ const callToAction = async (action) => {
   }
   if (action === FACTURACION_ANUAL_ANTERIOR) {
     await facturacionAnualAnterior()
+  }
+
+  if (action === INSERTAR_USUARIO) {
+    const questions = []
+    questions.push({
+      type: 'input',
+      name: 'user',
+      message: 'Inserte nombre de Usuario:',
+    })
+    questions.push({
+      type: 'input',
+      name: 'cuit',
+      message: 'Ingrese CUIT:',
+    })
+    const resultado = await inquirer.prompt(questions)
+    console.log('resultado', resultado)
+
+    await writeToFile(resultado)
   }
   return resultados
 }

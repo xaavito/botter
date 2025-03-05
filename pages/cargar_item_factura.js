@@ -4,8 +4,7 @@ const cargarItemFactura = async (page, comprobanteNominado = null) => {
   console.log('cargarItemFactura', comprobanteNominado)
   let valor = 0
   if (comprobanteNominado) {
-    const [cuit, monto] = comprobanteNominado.split(' ')
-    valor = monto
+    valor = comprobanteNominado.amount
   } else {
     valor = randomValorV2()
   }

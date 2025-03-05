@@ -18,10 +18,7 @@ const { menuPrincipal } = require('./pages/menu_principal.js')
 
 const { GENERAR, GENERAR_MAS, GENERAR_NOMINADA } = require('./constants')
 
-async function generar({ input = 1, action }) {
-  const cantidadComprobantes = action === GENERAR_MAS ? parseInt(input, 10) : 1
-
-  const comprobanteNominado = action === GENERAR_NOMINADA ? input : null
+async function generar({ cantidad = 1, action, datosNomindados = null }) {
   let resultados = []
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
@@ -45,7 +42,7 @@ async function generar({ input = 1, action }) {
 
   await miPagina(facturadorPage)
 
-  for (let index = 1; index <= cantidadComprobantes; index++) {
+  for (let index = 1; index <= cantidad; index++) {
     await generarComprobantes(facturadorPage)
 
     await seleccionarPuntoVenta(facturadorPage)
@@ -54,9 +51,12 @@ async function generar({ input = 1, action }) {
 
     await cargarConcepto(facturadorPage)
 
-    await cargarIVAReceptor(facturadorPage, comprobanteNominado)
+    await cargarIVAReceptor(facturadorPage, datosNomindados)
 
-    const itemsFactura = await cargarItemFactura(facturadorPage, comprobanteNominado)
+    const itemsFactura = await cargarItemFactura(
+      facturadorPage,
+      datosNomindados
+    )
 
     resultados.push({
       detalle: itemsFactura.detalle,
