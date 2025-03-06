@@ -1,6 +1,8 @@
+const { TIMEOUT } = require('../constants.js')
+
 async function continuar(page) {
   await page.click('input[value="Continuar >"]')
-  await page.waitForTimeout(1000)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {

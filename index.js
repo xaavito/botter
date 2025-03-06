@@ -77,7 +77,6 @@ const callToAction = async (action) => {
     const questions = []
     const users = readFromFile()
 
-    console.log(users)
     questions.push({
       type: 'list',
       name: 'user',
@@ -91,7 +90,6 @@ const callToAction = async (action) => {
     })
     const datosNomindados = await inquirer.prompt(questions)
 
-    //console.log('resultado', resultado)
     resultados = await generar({
       cantidad: 1,
       datosNomindados,
@@ -125,7 +123,6 @@ const callToAction = async (action) => {
       message: 'Ingrese CUIT:',
     })
     const resultado = await inquirer.prompt(questions)
-    console.log('resultado', resultado)
 
     await writeToFile(resultado)
   }

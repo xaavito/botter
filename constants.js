@@ -6,3 +6,4 @@ export const FACTURACION_MENSUAL = 'Ver Facturacion Mensual'
 export const FACTURACION_ANUAL = 'Ver Facturacion Anual'
 export const FACTURACION_ANUAL_ANTERIOR = 'Ver Facturacion Anual Año anterior'
 export const INSERTAR_USUARIO = 'Insertar Usuario'
+export const TIMEOUT = 1000

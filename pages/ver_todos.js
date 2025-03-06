@@ -1,6 +1,8 @@
+const { TIMEOUT } = require('../constants.js')
+
 async function verTodos(page) {
   await page.click('text=Ver todos')
-  await page.waitForTimeout(1000)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {

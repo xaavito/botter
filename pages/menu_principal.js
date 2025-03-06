@@ -1,6 +1,8 @@
+const { TIMEOUT } = require('../constants.js')
+
 async function menuPrincipal(page) {
   await page.click('input[value="Menú Principal"]')
-  await page.waitForTimeout(1000)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {
