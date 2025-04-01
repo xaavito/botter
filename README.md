@@ -30,18 +30,20 @@ Renombrar el archivo `.env.example` a `.env` y modificar la configuracion con su
 ```
 USER_CUIL='00000000000'
 USER_PASS='XXXXXXXXX'
+# Es el valor que tiene AFIP para el cliente, en general es APELLIDO PRIMER_NOMBRE SEGUNDO_NOMBRE (todo en mayusculas)
 USER_NAME='XXXXXXXXXXXXXX'
 # Todas las opciones una atras de otra, no meter /n o nada del estilo
-USER_MONTO=["18000", "19000", "15000"]
+# es el top de factura no nominada que permite la afip
+TOPE_FACTURA='205000'
+N_PUNTO_VENTA='1'
+# Cuando se emiten facturas al azar se toman estos % y se los descuenta al valor TOPE_FACTURA
+PORCENTAJES_FACTURACION=["10","15","5","20"]
 # Todas las opciones una atras de otra, no meter /n o nada del estilo
 DETALLES=["Actualización Servidor.","Actualización Cliente.","Arreglo pagina web.","Instalación paquetes","Instalación computadora nueva","Alta de cliente","Reparación base de datos","Backup base de datos","Proceso de backup automático","Servicio de Actualización de BD","Instalación de nueva terminal con cableado incluido"]
+# Usar true si tenes chrome, sino lanza chromium
+CHROME=false
 ```
 
-Opcional:
-
-```
-N_PUNTO_VENTA='1'
-```
 
 Reemplazar informacion con la informacion propia.
 

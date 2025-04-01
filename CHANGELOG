@@ -1,0 +1,19 @@
+# Changelog
+
+## [5.0.0]
+- Mejora de readme, env.example
+- Tiempo entre paginas estandarizado
+
+## [4.0.0]
+- Uso de porcentajes en vez de montos
+- Uso de agenda
+- Generar Nomindas con seleccion de usuario y monto
+
+## [3.0.0]
+- Generar muchas
+
+## [2.0.0]
+- Generar funcionando
+
+## [1.0.0]
+- Version Inicial

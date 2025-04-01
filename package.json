@@ -1,6 +1,6 @@
 {
   "name": "botter",
-  "version": "1.0.0",
+  "version": "5.0.0",
   "description": "Bot for doing complicated stuff easy",
   "main": "index.js",
   "dependencies": {

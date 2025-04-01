@@ -7,7 +7,7 @@ const rounder = (num) => ('0' + num).slice(-2)
 const today = new Date()
 
 const detallesArr = JSON.parse(process.env.DETALLES)
-const valoresArr = JSON.parse(process.env.USER_MONTO)
+const valoresArr = JSON.parse(process.env.USER_MONTO || '["20000"]')
 const maxTopeValue = process.env.TOPE_FACTURA
 const valoresPorcentualesArr = JSON.parse(process.env.PORCENTAJES_FACTURACION)
 
