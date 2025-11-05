@@ -58,6 +58,11 @@ const getLastDayOfLastYear = () => {
   return new Date(lastYear, 11, 31) // Año pasado, mes 0 (enero), día 1
 }
 
+const getFirstDayOfActualYear = () => {
+  const now = new Date()
+  return `01/01/${now.getFullYear()}`
+}
+
 const beginingOfCurrentMonth = () => {
   let beginingOfMonth = new Date()
   beginingOfMonth.setDate(1)
@@ -176,7 +181,68 @@ function saveToCSV(fecha, item, monto, fileName = false) {
     })
     writer.end()
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error)
+  }
+}
+
+/**
+ * Guarda resultados de tabla a CSV, la crea o agrega
+ * @param {Array} resultados - Array de arrays, cada array interno es una fila con sus columnas
+ * @param {String} fileName - Nombre del archivo (opcional)
+ * @example
+ * // resultados = [
+ * //   ['valor1', 'valor2', null, 'valor4'],
+ * //   ['valor5', null, 'valor7', 'valor8']
+ * // ]
+ */
+function saveToFacturacion(resultados, fileName = null) {
+  if (!resultados || resultados.length === 0) {
+    // eslint-disable-next-line no-console
+    console.log('No hay resultados para guardar')
+    return
+  }
+
+  const csvFilename = fileName
+    ? `${fileName}.csv`
+    : `${process.env.USER_CUIL}-facturacionAnual.csv`
+
+  try {
+    // Si el archivo no existe, crear con headers
+    if (!fs.existsSync(csvFilename)) {
+      const writer = csvWriter({ sendHeaders: false })
+      writer.pipe(fs.createWriteStream(csvFilename))
+
+      // Crear headers dinámicamente según la cantidad de columnas
+      const numColumns = resultados[0].length
+      const headers = {}
+      for (let i = 0; i < numColumns; i++) {
+        headers[`header${i + 1}`] = resultados[0][i]
+      }
+      writer.write(headers)
+      writer.end()
+    }
+
+    // Escribir todas las líneas
+    const writer = csvWriter({ sendHeaders: false })
+    writer.pipe(fs.createWriteStream(csvFilename, { flags: 'a' }))
+
+    const resultadosSinHeader = resultados.slice(1);
+    resultadosSinHeader.forEach((row) => {
+      const rowData = {}
+      row.forEach((cell, index) => {
+        // Manejar valores null, undefined o vacíos
+        rowData[`header${index + 1}`] = cell ?? ''
+      })
+      writer.write(rowData)
+    })
+
+    writer.end()
+    // eslint-disable-next-line no-console
+    console.log(`✓ Guardadas ${resultados.length} líneas en ${csvFilename}`)
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error al guardar CSV:', error)
   }
 }
 
@@ -207,9 +273,9 @@ const readFromFile = () => {
   }
 
   const fileContent = fs.readFileSync(filePath, 'utf-8')
-  const lines = fileContent.split('\n').filter(line => line.trim() !== '')
+  const lines = fileContent.split('\n').filter((line) => line.trim() !== '')
 
-  return lines.map(line => {
+  return lines.map((line) => {
     const [userPart, cuitPart] = line.split(', ')
     const name = userPart.split(': ')[1]
     const value = cuitPart.split(': ')[1]
@@ -222,6 +288,7 @@ module.exports = {
   randomDetalle,
   randomValor,
   saveToCSV,
+  saveToFacturacion,
   dateAsString,
   dateFormatted,
   sanitizeNumber,
@@ -238,5 +305,6 @@ module.exports = {
   getFirstDayOfLastYear,
   getLastDayOfLastYear,
   writeToFile,
-  readFromFile
+  readFromFile,
+  getFirstDayOfActualYear,
 }

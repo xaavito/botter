@@ -18,7 +18,7 @@ const { menuPrincipal } = require('./pages/menu_principal.js')
 
 const { GENERAR, GENERAR_MAS, GENERAR_NOMINADA } = require('./constants')
 
-async function generar({ cantidad = 1, action, datosNomindados = null }) {
+async function generar({ cantidad = 1, datos = null, exportacion = false }) {
   let resultados = []
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
@@ -51,11 +51,11 @@ async function generar({ cantidad = 1, action, datosNomindados = null }) {
 
     await cargarConcepto(facturadorPage)
 
-    await cargarIVAReceptor(facturadorPage, datosNomindados)
+    await cargarIVAReceptor(facturadorPage, datos)
 
     const itemsFactura = await cargarItemFactura(
       facturadorPage,
-      datosNomindados
+      datos
     )
 
     resultados.push({

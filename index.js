@@ -6,15 +6,18 @@ const {
   GENERAR,
   GENERAR_MAS,
   GENERAR_NOMINADA,
+  GENERAR_FACTURA_EXPORTACION,
   LISTAR,
   FACTURACION_MENSUAL,
   FACTURACION_ANUAL,
   FACTURACION_ANUAL_ANTERIOR,
+  DESCARGAR_FACTURACION_ANUAL,
   INSERTAR_USUARIO,
 } = require('./constants.js')
 
 const { generar } = require('./generar')
 const { listar } = require('./listar')
+const { listarOnline } = require('./listarOnline')
 const logger = require('./logger')
 const { writeToFile, readFromFile } = require('./helper.js')
 
@@ -42,9 +45,11 @@ const askQuestions = async () => {
         GENERAR,
         GENERAR_MAS,
         GENERAR_NOMINADA,
+        GENERAR_FACTURA_EXPORTACION,
         FACTURACION_MENSUAL,
         FACTURACION_ANUAL,
         FACTURACION_ANUAL_ANTERIOR,
+        DESCARGAR_FACTURACION_ANUAL,
         INSERTAR_USUARIO,
       ],
     },
@@ -92,10 +97,24 @@ const callToAction = async (action) => {
 
     resultados = await generar({
       cantidad: 1,
-      datosNomindados,
+      datos: datosNomindados,
     })
 
     await facturacionMensual()
+  }
+  if (action === GENERAR_FACTURA_EXPORTACION) {
+    const questions = [];
+    questions.push({
+      type: 'input',
+      name: 'amount',
+      message: 'Ingrese el monto:',
+    })
+    const datosFacturaExportacion = await inquirer.prompt(questions);
+    resultados = await generar({
+      cantidad: 1,
+      exportacion: true,
+      datos: datosFacturaExportacion,
+    })
   }
   if (action === LISTAR) {
     await listar()
@@ -108,6 +127,9 @@ const callToAction = async (action) => {
   }
   if (action === FACTURACION_ANUAL_ANTERIOR) {
     await facturacionAnualAnterior()
+  }
+  if (action === DESCARGAR_FACTURACION_ANUAL) {
+    await facturacionOnlineAFIP()
   }
 
   if (action === INSERTAR_USUARIO) {
@@ -157,14 +179,11 @@ const facturacionAnualAnterior = async () => {
   await listar('anualAnterior')
 }
 
-const run = async () => {
-  // resumen
-  //await facturacionAnual()
-  //await facturacionMensual()
-  //logger.info(
-  //`Tener en cuenta el tope mensual por favorrrr ${process.env.TOPE_FACTURACION_MENSUAL}`
-  //)
+const facturacionOnlineAFIP = async () => {
+  await listarOnline()
+}
 
+const run = async () => {
   // show script introduction
   await init()
   // ask questions
