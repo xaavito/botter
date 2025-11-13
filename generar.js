@@ -13,6 +13,7 @@ const { cargarConcepto } = require('./pages/cargar_concepto.js')
 const { cargarIVAReceptor } = require('./pages/cargar_iva_receptor.js')
 const { cargarItemFactura } = require('./pages/cargar_item_factura.js')
 const { confirmar } = require('./pages/confirmar.js')
+const { confirmarDialogo } = require('./pages/confirmarDialogo.js')
 const { imprimirFactura } = require('./pages/imprimir_factura.js')
 const { menuPrincipal } = require('./pages/menu_principal.js')
 
@@ -65,6 +66,8 @@ async function generar({ cantidad = 1, datos = null, exportacion = false }) {
     })
 
     await confirmar(facturadorPage)
+
+    await confirmarDialogo(facturadorPage)
 
     await imprimirFactura(facturadorPage)
 
