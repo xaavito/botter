@@ -3,12 +3,14 @@ const { TIMEOUT } = require('../constants.js')
 
 const cargarItemFactura = async (page, comprobanteNominado = null) => {
   let valor = 0
+  let detalle = ''
   if (comprobanteNominado) {
     valor = comprobanteNominado.amount
+    detalle = comprobanteNominado.descripcionItem
   } else {
     valor = randomValorV2()
+    detalle = randomDetalle()
   }
-  const detalle = randomDetalle()
 
   await page.fill('input[name="detalleCodigoArticulo"]', '1')
   await page.waitForTimeout(TIMEOUT)

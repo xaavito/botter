@@ -4,9 +4,9 @@ const { dateFormatted, saveToCSV } = require('./helper.js')
 const { login } = require('./pages/login.js')
 const { verTodos } = require('./pages/ver_todos.js')
 const { comprobantesEnLinea } = require('./pages/comprobantes_en_linea.js')
-const { miPagina } = require('./pages/mi_pagina.js')
 const { generarComprobantes } = require('./pages/generar_comprobantes.js')
-const { seleccionarPuntoVenta } = require('./pages/seleccionar_pto_vta.js')
+const { seleccionarEmpresa, seleccionarPuntoVenta } = require('./pages/seleccionar_pto_vta.js')
+
 
 const { continuar } = require('./pages/continuar.js')
 const { cargarConcepto } = require('./pages/cargar_concepto.js')
@@ -17,9 +17,7 @@ const { confirmarDialogo } = require('./pages/confirmarDialogo.js')
 const { imprimirFactura } = require('./pages/imprimir_factura.js')
 const { menuPrincipal } = require('./pages/menu_principal.js')
 
-const { GENERAR, GENERAR_MAS, GENERAR_NOMINADA } = require('./constants')
-
-async function generar({ cantidad = 1, datos = null, exportacion = false }) {
+async function generar({ cantidad = 1, datos = null}) {
   let resultados = []
   // disable headless to see the browser's action
   const browser = await playwright.chromium.launch({
@@ -32,7 +30,7 @@ async function generar({ cantidad = 1, datos = null, exportacion = false }) {
 
   await page.setDefaultNavigationTimeout(0)
 
-  await login(page)
+  await login(page, datos)
 
   await verTodos(page)
 
@@ -41,7 +39,7 @@ async function generar({ cantidad = 1, datos = null, exportacion = false }) {
   let pages = await context.pages()
   const facturadorPage = pages[1]
 
-  await miPagina(facturadorPage)
+  await seleccionarEmpresa(facturadorPage)
 
   for (let index = 1; index <= cantidad; index++) {
     await generarComprobantes(facturadorPage)
@@ -50,7 +48,7 @@ async function generar({ cantidad = 1, datos = null, exportacion = false }) {
 
     await continuar(facturadorPage)
 
-    await cargarConcepto(facturadorPage)
+    await cargarConcepto(facturadorPage, datos)
 
     await cargarIVAReceptor(facturadorPage, datos)
 
@@ -69,7 +67,7 @@ async function generar({ cantidad = 1, datos = null, exportacion = false }) {
 
     await confirmarDialogo(facturadorPage)
 
-    await imprimirFactura(facturadorPage)
+    await imprimirFactura(facturadorPage, datos)
 
     saveToCSV(dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
 

@@ -13,6 +13,7 @@ const {
   FACTURACION_ANUAL_ANTERIOR,
   DESCARGAR_FACTURACION_ANUAL,
   INSERTAR_USUARIO,
+  EXCEL,
 } = require('./constants.js')
 
 const { generar } = require('./generar')
@@ -20,6 +21,7 @@ const { listar } = require('./listar')
 const { listarOnline } = require('./listarOnline')
 const logger = require('./logger')
 const { writeToFile, readFromFile } = require('./helper.js')
+const { ExcelProcessor } = require('./excelProcessor')
 
 const init = async () => {
   // Si usamos el logger sale raro...
@@ -43,6 +45,7 @@ const askQuestions = async () => {
       message: 'Que queres que Botter haga por ti??',
       choices: [
         GENERAR,
+        EXCEL,
         GENERAR_MAS,
         GENERAR_NOMINADA,
         GENERAR_FACTURA_EXPORTACION,
@@ -103,13 +106,13 @@ const callToAction = async (action) => {
     await facturacionMensual()
   }
   if (action === GENERAR_FACTURA_EXPORTACION) {
-    const questions = [];
+    const questions = []
     questions.push({
       type: 'input',
       name: 'amount',
       message: 'Ingrese el monto:',
     })
-    const datosFacturaExportacion = await inquirer.prompt(questions);
+    const datosFacturaExportacion = await inquirer.prompt(questions)
     resultados = await generar({
       cantidad: 1,
       exportacion: true,
@@ -130,6 +133,11 @@ const callToAction = async (action) => {
   }
   if (action === DESCARGAR_FACTURACION_ANUAL) {
     await facturacionOnlineAFIP()
+  }
+
+  if (action === EXCEL) {
+    const excelProcessor = new ExcelProcessor()
+    resultados = await excelProcessor.ejecutar(generar)
   }
 
   if (action === INSERTAR_USUARIO) {

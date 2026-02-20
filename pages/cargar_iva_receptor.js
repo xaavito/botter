@@ -1,5 +1,8 @@
 const { TIMEOUT } = require('../constants.js')
 
+const CONTADO = 1;
+const TRANSFERENCIA = 6;
+
 const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
   await page.selectOption('select[name="idIVAReceptor"]', '5')
   await page.waitForTimeout(TIMEOUT)
@@ -9,7 +12,7 @@ const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
       '' + comprobanteNominado.user
     )
     await page.waitForTimeout(TIMEOUT)
-    await page.click('input#formadepago6')
+    await page.click('input#formadepago1')
   } else {
     await page.click('input[name="formaDePago"]')
   }

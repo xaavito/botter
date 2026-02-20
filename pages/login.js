@@ -4,13 +4,13 @@
  * @param page {Page}
  * @returns {Promise<void>}
  */
-async function login(page) {
+async function login(page, datos = null) {
   await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml')
   await page.waitForSelector('input[name="F1:username"]')
-  await page.fill('input[name="F1:username"]', process.env.USER_CUIL)
+  await page.fill('input[name="F1:username"]', datos.cuitEmisor)
   await page.click('input[name="F1:btnSiguiente"]')
   await page.waitForSelector('input[name="F1:password"]', { visible: true })
-  await page.fill('input[name="F1:password"]', process.env.USER_PASS)
+  await page.fill('input[name="F1:password"]', datos.password)
   await page.click('input[name="F1:btnIngresar"]')
 }
 
