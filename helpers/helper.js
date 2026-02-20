@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 var csvWriter = require('csv-write-stream')
-const crypto = require('crypto')
 
 const rounder = (num) => ('0' + num).slice(-2)
 
