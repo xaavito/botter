@@ -5,4 +5,4 @@ package-lock.json
 downloads/*
 invoices/*
 *.csv
-usuarios.txt
+data/*
