@@ -1,10 +1,9 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
-const { rounder } = require('../helpers/helper.js')
+const { rounder, generateShortId } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
 const playwright = require('playwright')
-const uuid = require('uuid')
 
 async function main() {
   const today = new Date()
@@ -83,9 +82,9 @@ async function main() {
     ])
 
     await download.saveAs(
-      `./downloads/factura-${process.env.USER_CUIL}-${dateAsString}${rounder(
+      `./invoices/factura-${process.env.USER_CUIL}-${dateAsString}${rounder(
         fechasComprobantes[i].split('/')[0]
-      )}-${uuid.v1()}.pdf`
+      )}-${generateShortId()}.pdf`
     )
   }
 

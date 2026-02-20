@@ -1,5 +1,4 @@
-const uuid = require('uuid')
-const { dateAsString } = require('../helpers/helper.js')
+const { getInvoiceFile } = require('../helpers/helper.js')
 
 const imprimirFactura = async (page) => {
   // Imprimir factura
@@ -10,11 +9,7 @@ const imprimirFactura = async (page) => {
     page.click('input[value="Imprimir..."]'),
   ])
 
-  await download.saveAs(
-    `./downloads/factura-${
-      process.env.USER_CUIL
-    }-${dateAsString()}-${uuid.v1()}.pdf`
-  )
+  await download.saveAs(getInvoiceFile())
 }
 
 module.exports = {

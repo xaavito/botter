@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 var csvWriter = require('csv-write-stream')
+const crypto = require('crypto')
 
 const rounder = (num) => ('0' + num).slice(-2)
 
@@ -227,7 +228,7 @@ function saveToFacturacion(resultados, fileName = null) {
     const writer = csvWriter({ sendHeaders: false })
     writer.pipe(fs.createWriteStream(csvFilename, { flags: 'a' }))
 
-    const resultadosSinHeader = resultados.slice(1);
+    const resultadosSinHeader = resultados.slice(1)
     resultadosSinHeader.forEach((row) => {
       const rowData = {}
       row.forEach((cell, index) => {
@@ -283,6 +284,23 @@ const readFromFile = () => {
   })
 }
 
+// Función para generar un ID corto basado en tiempo actual
+const generateShortId = () => {
+  const now = new Date()
+  const hours = now.getHours().toString().padStart(2, '0')
+  const minutes = now.getMinutes().toString().padStart(2, '0')
+  const seconds = now.getSeconds().toString().padStart(2, '0')
+  const milliseconds = now.getMilliseconds().toString().padStart(3, '0')
+
+  // Genera un ID como: 143025123 (HHMMSSmmm)
+  return `${hours}${minutes}${seconds}${milliseconds}`
+}
+
+const getInvoiceFile = () =>
+  `./invoices/factura-${
+    process.env.USER_CUIL
+  }-${dateAsString()}-${generateShortId()}.pdf`
+
 module.exports = {
   rounder,
   randomDetalle,
@@ -307,4 +325,6 @@ module.exports = {
   writeToFile,
   readFromFile,
   getFirstDayOfActualYear,
+  generateShortId,
+  getInvoiceFile,
 }
