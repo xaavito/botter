@@ -1,4 +1,4 @@
-const { listarOnline } = require('../listarOnline')
+const { listarOnline } = require('../actions/listarOnline')
 
 const facturacionOnlineAFIP = async () => {
   await listarOnline()

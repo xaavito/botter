@@ -1,4 +1,4 @@
-const { generar } = require('../generar')
+const { generar } = require('../actions/generar')
 const { facturacionMensual } = require('./facturacion-mensual-action')
 
 const generarAction = async () => {

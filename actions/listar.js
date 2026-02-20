@@ -10,9 +10,9 @@ const {
   dateFormatted,
   getFirstDayOfLastYear,
   getLastDayOfLastYear,
-} = require('./helpers/helper.js')
+} = require('../helpers/helper.js')
 
-const logger = require('./helpers/logger.js')
+const logger = require('../helpers/logger.js')
 
 const csvFilename = `data/${process.env.USER_CUIL}.csv`
 

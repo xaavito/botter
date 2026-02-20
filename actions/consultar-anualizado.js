@@ -2,21 +2,21 @@ const {
   sanitizeNumber,
   getDatesfromOneYearBack,
   saveToCSV,
-} = require('./helper.js')
+} = require('../helpers/helper.js')
 
-const { login } = require('./pages/login.js')
-const { verTodos } = require('./pages/ver_todos.js')
-const { misComprobantes } = require('./pages/mis_comprobantes.js')
-const { emitidos } = require('./pages/emitidos.js')
-const { consumidorFinal } = require('./pages/consumidor_final.js')
-const { puntoVentaModal } = require('./pages/pto_vta_modal.js')
-const { seleccionarFechas } = require('./pages/seleccionar_fechas.js')
-const { obtenerValoresFacturas } = require('./pages/valores_facturas.js')
-const { consultar } = require('./pages/consultar.js')
+const { login } = require('../pages/login.js')
+const { verTodos } = require('../pages/ver_todos.js')
+const { misComprobantes } = require('../pages/mis_comprobantes.js')
+const { emitidos } = require('../pages/emitidos.js')
+const { consumidorFinal } = require('../pages/consumidor_final.js')
+const { puntoVentaModal } = require('../pages/pto_vta_modal.js')
+const { seleccionarFechas } = require('../pages/seleccionar_fechas.js')
+const { obtenerValoresFacturas } = require('../pages/valores_facturas.js')
+const { consultar } = require('../pages/consultar.js')
 
 const playwright = require('playwright')
 
-const logger = require('./logger')
+const logger = require('../helpers/logger.js')
 
 async function main() {
   // disable headless to see the browser's action

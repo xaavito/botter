@@ -3,7 +3,7 @@
 // minimum node version 8 for async / await feature
 
 const playwright = require('playwright')
-const { login } = require('./helper')
+const { login } = require('../pages/login.js')
 
 async function main() {
   // disable headless to see the browser's action

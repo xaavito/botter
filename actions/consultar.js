@@ -1,7 +1,8 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
-const { login, rounder } = require('./helper.js')
+const { rounder } = require('../helpers/helper.js')
+const { login } = require('../pages/login.js')
 const playwright = require('playwright')
 const uuid = require('uuid')
 

@@ -1,4 +1,4 @@
-const { listar } = require('../listar')
+const { listar } = require('../actions/listar')
 
 const listarAction = async () => {
   await listar()

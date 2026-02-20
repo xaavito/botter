@@ -1,16 +1,16 @@
 const playwright = require('playwright')
-const { saveToFacturacion } = require('./helpers/helper.js')
+const { saveToFacturacion } = require('../helpers/helper.js')
 
-const { login } = require('./pages/login.js')
-const { verTodos } = require('./pages/ver_todos.js')
-const { comprobantesEnLinea } = require('./pages/comprobantes_en_linea.js')
-const { miPagina } = require('./pages/mi_pagina.js')
-const { consultas } = require('./pages/consultas.js')
-const { seleccionarFechaDesde } = require('./pages/seleccionar_fecha_desde.js')
-const { buscar } = require('./pages/buscar.js')
-const { iterarTablaJig } = require('./pages/iterar_tabla.js')
+const { login } = require('../pages/login.js')
+const { verTodos } = require('../pages/ver_todos.js')
+const { comprobantesEnLinea } = require('../pages/comprobantes_en_linea.js')
+const { miPagina } = require('../pages/mi_pagina.js')
+const { consultas } = require('../pages/consultas.js')
+const { seleccionarFechaDesde } = require('../pages/seleccionar_fecha_desde.js')
+const { buscar } = require('../pages/buscar.js')
+const { iterarTablaJig } = require('../pages/iterar_tabla.js')
 
-const { menuPrincipal } = require('./pages/menu_principal.js')
+const { menuPrincipal } = require('../pages/menu_principal.js')
 
 async function listarOnline() {
   let resultados = []

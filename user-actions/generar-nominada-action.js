@@ -1,5 +1,5 @@
 const inquirer = require('inquirer')
-const { generar } = require('../generar.js')
+const { generar } = require('../actions/generar.js')
 const { readFromFile } = require('../helpers/helper.js')
 const { facturacionMensual } = require('./facturacion-mensual-action.js')
 
