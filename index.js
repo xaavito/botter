@@ -7,19 +7,15 @@ const {
   GENERAR_MAS,
   GENERAR_NOMINADA,
   GENERAR_FACTURA_EXPORTACION,
-  LISTAR,
   FACTURACION_MENSUAL,
   FACTURACION_ANUAL,
   FACTURACION_ANUAL_ANTERIOR,
   DESCARGAR_FACTURACION_ANUAL,
   INSERTAR_USUARIO,
-} = require('./constants.js')
+} = require('./helpers/constants.js')
 
-const { generar } = require('./generar')
-const { listar } = require('./listar')
-const { listarOnline } = require('./listarOnline')
-const logger = require('./logger')
-const { writeToFile, readFromFile } = require('./helper.js')
+const logger = require('./helpers/logger.js')
+const { actionMap } = require('./user-actions/index.js')
 
 const init = async () => {
   // Si usamos el logger sale raro...
@@ -59,96 +55,16 @@ const askQuestions = async () => {
 }
 
 const callToAction = async (action) => {
-  let resultados
-  if (action === GENERAR) {
-    resultados = await generar({ cantidad: 1 })
-    // corremos ademas que nos muestre cuanto viene facturando mes a mes
-    await facturacionMensual()
-  }
-  if (action === GENERAR_MAS) {
-    const resultado = await inquirer.prompt([
-      {
-        name: 'cantidadAGenerar',
-        message: 'Cuantas necesitas generar?',
-        type: 'input',
-      },
-    ])
+  // Buscar la acción en el mapa
+  const actionFunction = actionMap[action]
 
-    resultados = await generar({ cantidad: resultado.cantidadAGenerar })
-
-    await facturacionMensual()
-  }
-  if (action === GENERAR_NOMINADA) {
-    const questions = []
-    const users = readFromFile()
-
-    questions.push({
-      type: 'list',
-      name: 'user',
-      message: 'Seleccione un usuario:',
-      choices: users,
-    })
-    questions.push({
-      type: 'input',
-      name: 'amount',
-      message: 'Ingrese el monto:',
-    })
-    const datosNomindados = await inquirer.prompt(questions)
-
-    resultados = await generar({
-      cantidad: 1,
-      datos: datosNomindados,
-    })
-
-    await facturacionMensual()
-  }
-  if (action === GENERAR_FACTURA_EXPORTACION) {
-    const questions = [];
-    questions.push({
-      type: 'input',
-      name: 'amount',
-      message: 'Ingrese el monto:',
-    })
-    const datosFacturaExportacion = await inquirer.prompt(questions);
-    resultados = await generar({
-      cantidad: 1,
-      exportacion: true,
-      datos: datosFacturaExportacion,
-    })
-  }
-  if (action === LISTAR) {
-    await listar()
-  }
-  if (action === FACTURACION_MENSUAL) {
-    await facturacionMensual()
-  }
-  if (action === FACTURACION_ANUAL) {
-    await facturacionAnual()
-  }
-  if (action === FACTURACION_ANUAL_ANTERIOR) {
-    await facturacionAnualAnterior()
-  }
-  if (action === DESCARGAR_FACTURACION_ANUAL) {
-    await facturacionOnlineAFIP()
+  if (!actionFunction) {
+    logger.error(`Acción no encontrada: ${action}`)
+    return null
   }
 
-  if (action === INSERTAR_USUARIO) {
-    const questions = []
-    questions.push({
-      type: 'input',
-      name: 'user',
-      message: 'Inserte nombre de Usuario:',
-    })
-    questions.push({
-      type: 'input',
-      name: 'cuit',
-      message: 'Ingrese CUIT:',
-    })
-    const resultado = await inquirer.prompt(questions)
-
-    await writeToFile(resultado)
-  }
-  return resultados
+  // Ejecutar la acción correspondiente
+  return await actionFunction()
 }
 
 const success = async (seleccion, resultados) => {
@@ -167,21 +83,6 @@ const success = async (seleccion, resultados) => {
   }
 }
 
-const facturacionMensual = async () => {
-  await listar('mensual')
-}
-
-const facturacionAnual = async () => {
-  await listar('anual')
-}
-
-const facturacionAnualAnterior = async () => {
-  await listar('anualAnterior')
-}
-
-const facturacionOnlineAFIP = async () => {
-  await listarOnline()
-}
 
 const run = async () => {
   // show script introduction

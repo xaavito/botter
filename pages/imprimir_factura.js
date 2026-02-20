@@ -1,5 +1,5 @@
 const uuid = require('uuid')
-const { dateAsString } = require('../helper.js')
+const { dateAsString } = require('../helpers/helper.js')
 
 const imprimirFactura = async (page) => {
   // Imprimir factura

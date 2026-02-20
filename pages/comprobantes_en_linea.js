@@ -1,4 +1,4 @@
-const { TIMEOUT } = require('../constants.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
 async function comprobantesEnLinea(page) {
   await page.click('text=Comprobantes en línea')

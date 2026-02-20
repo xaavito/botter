@@ -1,5 +1,5 @@
-const { randomDetalle, randomValorV2 } = require('../helper.js')
-const { TIMEOUT } = require('../constants.js')
+const { randomDetalle, randomValorV2 } = require('../helpers/helper.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
 const cargarItemFactura = async (page, comprobanteNominado = null) => {
   let valor = 0

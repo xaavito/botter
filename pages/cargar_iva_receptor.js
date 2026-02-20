@@ -1,4 +1,4 @@
-const { TIMEOUT } = require('../constants.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
 const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
   await page.selectOption('select[name="idIVAReceptor"]', '5')
