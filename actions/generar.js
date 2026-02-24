@@ -68,7 +68,7 @@ async function generar({ cantidad = 1, datos = null}) {
 
     await imprimirFactura(facturadorPage, datos)
 
-    saveToCSV(dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
+    saveToCSV(datos, dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
 
     await facturadorPage.waitForTimeout(1000)
 

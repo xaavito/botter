@@ -149,11 +149,13 @@ const getDatesfromOneYearBack = () => {
  * @param {string} item
  * @param {string} monto
  */
-function saveToCSV(fecha, item, monto, fileName = false) {
+function saveToCSV(datos, fecha, item, monto, fileName = false) {
   var writer = csvWriter({ sendHeaders: false }) //Instantiate var
   var csvFilename
   if (fileName) {
     csvFilename = `data/${fileName}.csv`
+  } else if (datos) {
+    csvFilename = `data/${dateAsString()}-${generateShortId()}.csv`
   } else {
     csvFilename = `data/${process.env.USER_CUIL}.csv`
   }
