@@ -15,12 +15,7 @@ const {
   EXCEL,
 } = require('./helpers/constants.js')
 
-const { generar } = require('./generar')
-const { listar } = require('./listar')
-const { listarOnline } = require('./listarOnline')
-const logger = require('./logger')
-const { writeToFile, readFromFile } = require('./helper.js')
-const { ExcelProcessor } = require('./excelProcessor')
+const { actionMap } = require('./user-actions/index.js')
 
 const init = async () => {
   // Si usamos el logger sale raro...

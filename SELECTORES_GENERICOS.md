@@ -192,6 +192,13 @@ Para tu caso de uso:
 
 
 
+const { generar } = require('./generar')
+const { listar } = require('./listar')
+const { listarOnline } = require('./listarOnline')
+const logger = require('./logger')
+const { writeToFile, readFromFile } = require('./helper.js')
+const { ExcelProcessor } = require('./excelProcessor')
+
 if (action === EXCEL) {
     const excelProcessor = new ExcelProcessor()
     resultados = await excelProcessor.ejecutar(generar)
