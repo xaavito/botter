@@ -42,13 +42,13 @@ const askQuestions = async () => {
         GENERAR,
         GENERAR_MAS,
         GENERAR_NOMINADA,
+        EXCEL,
         GENERAR_FACTURA_EXPORTACION,
         FACTURACION_MENSUAL,
         FACTURACION_ANUAL,
         FACTURACION_ANUAL_ANTERIOR,
         DESCARGAR_FACTURACION_ANUAL,
         INSERTAR_USUARIO,
-        EXCEL
       ],
     },
   ]

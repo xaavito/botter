@@ -5,7 +5,7 @@ const chalk = require('chalk')
 const logger = require('./logger')
 
 class ExcelProcessor {
-  constructor(dataFolderPath = 'data') {
+  constructor(dataFolderPath = '../data') {
     this.dataFolderPath = dataFolderPath
     this.excelFile = null
     this.data = []
