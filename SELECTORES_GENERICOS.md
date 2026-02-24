@@ -189,35 +189,3 @@ Para tu caso de uso:
 ✅ **Más robusto** - Funciona independientemente del contenido  
 ✅ **Reutilizable** - Las funciones se pueden usar en cualquier parte del proyecto  
 ✅ **Documentado** - Con JSDoc para mejor autocompletado en el IDE
-
-
-
-const { generar } = require('./generar')
-const { listar } = require('./listar')
-const { listarOnline } = require('./listarOnline')
-const logger = require('./logger')
-const { writeToFile, readFromFile } = require('./helper.js')
-const { ExcelProcessor } = require('./excelProcessor')
-
-if (action === EXCEL) {
-    const excelProcessor = new ExcelProcessor()
-    resultados = await excelProcessor.ejecutar(generar)
-  }
-
-  if (action === INSERTAR_USUARIO) {
-    const questions = []
-    questions.push({
-      type: 'input',
-      name: 'user',
-      message: 'Inserte nombre de Usuario:',
-    })
-    questions.push({
-      type: 'input',
-      name: 'cuit',
-      message: 'Ingrese CUIT:',
-    })
-    const resultado = await inquirer.prompt(questions)
-
-    await writeToFile(resultado)
-  }
-  return resultados

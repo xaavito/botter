@@ -12,9 +12,10 @@ const {
   FACTURACION_ANUAL_ANTERIOR,
   DESCARGAR_FACTURACION_ANUAL,
   INSERTAR_USUARIO,
-  EXCEL,
+  EXCEL
 } = require('./helpers/constants.js')
 
+const logger = require('./helpers/logger.js')
 const { actionMap } = require('./user-actions/index.js')
 
 const init = async () => {
@@ -39,7 +40,6 @@ const askQuestions = async () => {
       message: 'Que queres que Botter haga por ti??',
       choices: [
         GENERAR,
-        EXCEL,
         GENERAR_MAS,
         GENERAR_NOMINADA,
         GENERAR_FACTURA_EXPORTACION,
@@ -48,6 +48,7 @@ const askQuestions = async () => {
         FACTURACION_ANUAL_ANTERIOR,
         DESCARGAR_FACTURACION_ANUAL,
         INSERTAR_USUARIO,
+        EXCEL
       ],
     },
   ]

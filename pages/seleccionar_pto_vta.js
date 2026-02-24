@@ -16,15 +16,9 @@ async function seleccionarPuntoVenta(page) {
 async function seleccionarEmpresa(page) {
   // Opción 1: Buscar por clase CSS (más genérico)
   const botonEmpresa = await page.locator('input.btn_empresa[type="button"]')
-<<<<<<< HEAD
 
   // Verificar que el botón existe
   if ((await botonEmpresa.count()) > 0) {
-=======
-  
-  // Verificar que el botón existe
-  if (await botonEmpresa.count() > 0) {
->>>>>>> excel
     await botonEmpresa.first().click()
     await page.waitForTimeout(TIMEOUT)
   } else {
@@ -42,13 +36,8 @@ async function seleccionarEmpresaPorSubmit(page) {
   const botonEmpresa = await page.locator(
     'input[type="button"][onclick*="seleccionaEmpresaForm.submit()"]'
   )
-<<<<<<< HEAD
 
   if ((await botonEmpresa.count()) > 0) {
-=======
-  
-  if (await botonEmpresa.count() > 0) {
->>>>>>> excel
     await botonEmpresa.first().click()
     await page.waitForTimeout(TIMEOUT)
   } else {
