@@ -1,5 +1,4 @@
-const playwright = require('playwright')
-const { dateFormatted, saveToCSV } = require('../helpers/helper.js')
+const { dateFormatted, saveToCSV, launchBrowser } = require('../helpers/helper.js')
 
 const { login } = require('../pages/login.js')
 const { verTodos } = require('../pages/ver_todos.js')
@@ -19,11 +18,7 @@ const { menuPrincipal } = require('../pages/menu_principal.js')
 async function generar({ cantidad = 1, datos = null}) {
   let resultados = []
   // disable headless to see the browser's action
-  const browser = await playwright.chromium.launch({
-    headless: false,
-    args: ['--disable-dev-shm-usage'],
-    ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
-  })
+  const browser = await launchBrowser()
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 

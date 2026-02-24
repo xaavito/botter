@@ -2,6 +2,7 @@ const {
   sanitizeNumber,
   getDatesfromOneYearBack,
   saveToCSV,
+  launchBrowser,
 } = require('../helpers/helper.js')
 
 const { login } = require('../pages/login.js')
@@ -14,17 +15,11 @@ const { seleccionarFechas } = require('../pages/seleccionar_fechas.js')
 const { obtenerValoresFacturas } = require('../pages/valores_facturas.js')
 const { consultar } = require('../pages/consultar.js')
 
-const playwright = require('playwright')
-
 const logger = require('../helpers/logger.js')
 
 async function main() {
   // disable headless to see the browser's action
-  const browser = await playwright.chromium.launch({
-    headless: false,
-    args: ['--disable-dev-shm-usage'],
-    ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
-  })
+  const browser = await launchBrowser()
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 

@@ -1,9 +1,8 @@
 // npm install playwright
 // may take a while for downloading binaries
 // minimum node version 8 for async / await feature
-const { rounder, generateShortId } = require('../helpers/helper.js')
+const { rounder, generateShortId, launchBrowser } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
-const playwright = require('playwright')
 
 async function main() {
   const today = new Date()
@@ -13,11 +12,7 @@ async function main() {
     today.getMonth() + 1
   )}/${today.getFullYear()}`
   // disable headless to see the browser's action
-  const browser = await playwright.chromium.launch({
-    headless: false,
-    args: ['--disable-dev-shm-usage'],
-    ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
-  })
+  const browser = await launchBrowser()
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 

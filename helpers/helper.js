@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const playwright = require('playwright')
 var csvWriter = require('csv-write-stream')
 
 const rounder = (num) => ('0' + num).slice(-2)
@@ -302,6 +303,18 @@ const getInvoiceFile = () =>
     process.env.USER_CUIL
   }-${dateAsString()}-${generateShortId()}.pdf`
 
+/**
+ * Lanza un browser de Playwright con la configuración estándar del proyecto
+ * @returns {Promise<Browser>} Browser de Playwright
+ */
+async function launchBrowser() {
+  return await playwright.chromium.launch({
+    headless: process.env.VISUAL || false,
+    args: ['--disable-dev-shm-usage'],
+    ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
+  })
+}
+
 module.exports = {
   rounder,
   randomDetalle,
@@ -328,4 +341,5 @@ module.exports = {
   getFirstDayOfActualYear,
   generateShortId,
   getInvoiceFile,
+  launchBrowser,
 }
