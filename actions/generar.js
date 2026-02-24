@@ -29,7 +29,7 @@ async function generar({ cantidad = 1, datos = null}) {
 
   await page.setDefaultNavigationTimeout(0)
 
-  await login(page)
+  await login(page, datos)
 
   await verTodos(page)
 
@@ -47,7 +47,7 @@ async function generar({ cantidad = 1, datos = null}) {
 
     await continuar(facturadorPage)
 
-    await cargarConcepto(facturadorPage)
+    await cargarConcepto(facturadorPage, datos)
 
     await cargarIVAReceptor(facturadorPage, datos)
 
@@ -66,7 +66,7 @@ async function generar({ cantidad = 1, datos = null}) {
 
     await confirmarDialogo(facturadorPage)
 
-    await imprimirFactura(facturadorPage)
+    await imprimirFactura(facturadorPage, datos)
 
     saveToCSV(dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
 
