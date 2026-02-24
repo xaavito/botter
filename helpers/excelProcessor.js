@@ -94,6 +94,8 @@ class ExcelProcessor {
 
     const resultados = []
 
+    const errores = []
+
     // Iterar por cada fila del Excel
     for (let i = 0; i < this.data.length; i++) {
       const row = this.data[i]
@@ -104,16 +106,21 @@ class ExcelProcessor {
       const datosNomindados = this.prepararDatos(row)
 
       // Generar factura para esta fila
-      const resultado = await generarCallback({
-        cantidad: 1,
-        datos: datosNomindados,
-      })
+      try {
+        const resultado = await generarCallback({
+          cantidad: 1,
+          datos: datosNomindados,
+        })
 
-      if (resultado && resultado.length > 0) {
-        resultados.push(...resultado)
+        if (resultado && resultado.length > 0) {
+          resultados.push(...resultado)
+        }
+
+        logger.info(chalk.green(`✓ Fila ${i + 1} procesada exitosamente`))
+      } catch (error) {
+        logger.error(`Error procesando ${datosNomindados.toString()}`)
+        error.push(datosNomindados.toString())
       }
-
-      logger.info(chalk.green(`✓ Fila ${i + 1} procesada exitosamente`))
     }
 
     logger.info(
@@ -121,6 +128,8 @@ class ExcelProcessor {
         `\n✓ Proceso completado: ${resultados.length} facturas generadas`
       )
     )
+
+    logger.info(chalk.red.bold(`\n✓ Errores: ${errores}`))
 
     return resultados
   }
@@ -245,7 +254,9 @@ class ExcelProcessor {
         `\n⏱️  TIEMPO TOTAL DE EJECUCIÓN: ${tiempoFormateado.trim()}`
       )
     )
-    logger.info(chalk.cyan(`   (${milisegundos.toLocaleString()} milisegundos)`))
+    logger.info(
+      chalk.cyan(`   (${milisegundos.toLocaleString()} milisegundos)`)
+    )
   }
 }
 
