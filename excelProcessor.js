@@ -156,6 +156,7 @@ class ExcelProcessor {
       modoPago: this.toStringSeguro(row[4]), // Columna E
       tipoFactura: this.toStringSeguro(row[5]), // Columna F
       descripcionItem: this.toStringSeguro(row[6]), // Columna G
+      ivaReceptor: this.toStringSeguro(row[7]), // Columna H
     }
 
     return datos
@@ -190,6 +191,10 @@ class ExcelProcessor {
    * @returns {Array} Array de resultados
    */
   async ejecutar(generarCallback) {
+    // ⏱️ INICIO: Medir tiempo de ejecución
+    const tiempoInicio = Date.now()
+    logger.info(chalk.cyan('⏱️  Iniciando proceso de Excel...'))
+
     // Buscar archivo Excel
     if (!this.findExcelFile()) {
       return []
@@ -201,7 +206,46 @@ class ExcelProcessor {
     // Procesar filas
     const resultados = await this.procesarFilas(generarCallback)
 
+    // ⏱️ FIN: Calcular y mostrar tiempo total
+    const tiempoFin = Date.now()
+    const tiempoTotal = tiempoFin - tiempoInicio
+    this.mostrarTiempoEjecucion(tiempoTotal)
+
     return resultados
+  }
+
+  /**
+   * Formatea y muestra el tiempo total de ejecución
+   * @param {number} milisegundos - Tiempo en milisegundos
+   */
+  mostrarTiempoEjecucion(milisegundos) {
+    const segundos = Math.floor(milisegundos / 1000)
+    const minutos = Math.floor(segundos / 60)
+    const horas = Math.floor(minutos / 60)
+
+    const ms = milisegundos % 1000
+    const segs = segundos % 60
+    const mins = minutos % 60
+
+    let tiempoFormateado = ''
+
+    if (horas > 0) {
+      tiempoFormateado += `${horas}h `
+    }
+    if (minutos > 0) {
+      tiempoFormateado += `${mins}m `
+    }
+    if (segundos > 0 || milisegundos < 1000) {
+      tiempoFormateado += `${segs}s `
+    }
+    tiempoFormateado += `${ms}ms`
+
+    logger.info(
+      chalk.cyan.bold(
+        `\n⏱️  TIEMPO TOTAL DE EJECUCIÓN: ${tiempoFormateado.trim()}`
+      )
+    )
+    logger.info(chalk.cyan(`   (${milisegundos.toLocaleString()} milisegundos)`))
   }
 }
 
