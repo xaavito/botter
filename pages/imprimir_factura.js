@@ -1,6 +1,6 @@
 const { getInvoiceFile } = require('../helpers/helper.js')
 
-const imprimirFactura = async (page) => {
+const imprimirFactura = async (page, datos = null) => {
   // Imprimir factura
   const [download] = await Promise.all([
     // Start waiting for the download

@@ -63,7 +63,7 @@ async function main() {
       )
 
       totalAnual += valorFactura
-      saveToCSV(
+      saveToCSV(null, 
         await valores.rowsDates.nth(i).textContent(),
         'sin detalle',
         valorFactura,

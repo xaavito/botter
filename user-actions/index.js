@@ -13,6 +13,7 @@ const {
 } = require('./facturacion-anual-anterior-action.js')
 const { facturacionOnlineAFIP } = require('./facturacion-online-afip-action.js')
 const { insertarUsuarioAction } = require('./insertar-usuario-action.js')
+const { excelAction } = require('./excel-action.js')
 
 // Importar constantes para el mapeo
 const {
@@ -26,6 +27,7 @@ const {
   FACTURACION_ANUAL_ANTERIOR,
   DESCARGAR_FACTURACION_ANUAL,
   INSERTAR_USUARIO,
+  EXCEL,
 } = require('../helpers/constants.js')
 
 // Mapeo de acciones - cada acción tiene su función correspondiente
@@ -40,6 +42,7 @@ const actionMap = {
   [FACTURACION_ANUAL_ANTERIOR]: facturacionAnualAnterior,
   [DESCARGAR_FACTURACION_ANUAL]: facturacionOnlineAFIP,
   [INSERTAR_USUARIO]: insertarUsuarioAction,
+  [EXCEL]: excelAction,
 }
 
 module.exports = {

@@ -6,3 +6,5 @@ downloads/*
 invoices/*
 *.csv
 data/*
+*.csv
+data/*
