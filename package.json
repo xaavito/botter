@@ -8,13 +8,13 @@
     "chalk": "^2.4.1",
     "csv-parser": "^3.0.0",
     "csv-write-stream": "^2.0.0",
-    "dotenv": "^16.0.1",
-    "figlet": "^1.2.0",
-    "inquirer": "^6.0.0",
-    "pino": "^8.11.0",
-    "playwright": "^1.22.2",
-    "shelljs": "^0.8.2",
-    "uuid": "^8.3.2",
+    "dotenv": "^16.4.5",
+    "figlet": "^1.7.0",
+    "inquirer": "^6.5.2",
+    "pino": "^8.19.0",
+    "playwright": "^1.42.0",
+    "shelljs": "^0.8.5",
+    "uuid": "^9.0.1",
     "xlsx": "^0.18.5"
   },
   "scripts": {
@@ -45,9 +45,9 @@
     "playwright"
   ],
   "devDependencies": {
-    "eslint": "^8.23.0",
-    "eslint-config-prettier": "^8.5.0",
-    "pino-pretty": "^9.3.0",
-    "prettier": "^2.7.1"
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "pino-pretty": "^10.3.1",
+    "prettier": "^3.2.5"
   }
 }

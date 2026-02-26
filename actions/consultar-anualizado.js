@@ -17,9 +17,17 @@ const { consultar } = require('../pages/consultar.js')
 
 const logger = require('../helpers/logger.js')
 
+/**
+ * Consulta y guarda facturación anual completa desde AFIP
+ * @returns {Promise<void>}
+ * @throws {Error} Si falla la consulta
+ */
 async function main() {
-  // disable headless to see the browser's action
-  const browser = await launchBrowser()
+  let browser
+  
+  try {
+    // disable headless to see the browser's action
+    browser = await launchBrowser()
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 
@@ -41,7 +49,7 @@ async function main() {
   await puntoVentaModal(facturadorPage)
 
   //REPETIR POR CADA FECHA
-  var datesArr = getDatesfromOneYearBack()
+  const datesArr = getDatesfromOneYearBack()
   let totalAnual = 0
   // datesArr.forEach(async e => {
   for (const e of datesArr) {
@@ -76,6 +84,15 @@ async function main() {
 
   // ToDo downgrade next timeout
   await facturadorPage.waitForTimeout(10000)
-  await browser.close()
+  } catch (error) {
+    logger.error('Error consultando facturación anual:', error)
+    throw error
+  } finally {
+    if (browser) {
+      await browser.close().catch(err => 
+        logger.error('Error cerrando browser:', err)
+      )
+    }
+  }
 }
 main()

@@ -3,8 +3,17 @@
 // minimum node version 8 for async / await feature
 const { rounder, generateShortId, launchBrowser } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
+const logger = require('../helpers/logger.js')
 
+/**
+ * Descarga facturas del mes actual desde AFIP
+ * @returns {Promise<void>}
+ * @throws {Error} Si falla la descarga
+ */
 async function main() {
+  let browser
+  
+  try {
   const today = new Date()
   const dateAsString = `${today.getFullYear()}${rounder(today.getMonth() + 1)}`
 
@@ -84,6 +93,15 @@ async function main() {
   }
 
   await facturadorPage.waitForTimeout(1000)
-  await browser.close()
+  } catch (error) {
+    logger.error('Error consultando facturas:', error)
+    throw error
+  } finally {
+    if (browser) {
+      await browser.close().catch(err => 
+        logger.error('Error cerrando browser:', err)
+      )
+    }
+  }
 }
 main()

@@ -13,19 +13,19 @@ const maxTopeValue = process.env.TOPE_FACTURA
 const valoresPorcentualesArr = JSON.parse(process.env.PORCENTAJES_FACTURACION)
 
 const randomDetalle = () => {
-  var random = Math.floor(Math.random() * detallesArr.length)
+  const random = Math.floor(Math.random() * detallesArr.length)
   return detallesArr[random] || 'Servicios'
 }
 
 const sanitizeDateToNoTime = (date) => date.setHours(0, 0, 0, 0)
 
 const randomValor = () => {
-  var random = Math.floor(Math.random() * valoresArr.length)
+  const random = Math.floor(Math.random() * valoresArr.length)
   return valoresArr[random]
 }
 
 const randomValorV2 = () => {
-  var random = Math.floor(Math.random() * valoresPorcentualesArr.length)
+  const random = Math.floor(Math.random() * valoresPorcentualesArr.length)
   const newValue =
     maxTopeValue - (valoresPorcentualesArr[random] * maxTopeValue) / 100
   return redondearMiles(newValue).toString()
@@ -93,9 +93,9 @@ const sanitizeNumber = (number) => {
 
 const getFormatedDate = (myDate) => {
   // returns DD/MM/YYYY
-  var day = myDate.getDate()
-  var month = myDate.getMonth() + 1
-  var year = myDate.getFullYear()
+  let day = myDate.getDate()
+  let month = myDate.getMonth() + 1
+  const year = myDate.getFullYear()
 
   if (day < 10) {
     day = '0' + day
@@ -112,7 +112,7 @@ const subtractYears = (numOfYears, date = new Date()) => {
 }
 
 const addDays = (date, numOfDays) => {
-  var myDate = new Date(date)
+  const myDate = new Date(date)
   return new Date(myDate.setDate(myDate.getDate() + numOfDays))
 }
 
@@ -122,12 +122,12 @@ const addDays = (date, numOfDays) => {
  * @returns Array
  */
 const getDatesfromOneYearBack = () => {
-  var minus1year = subtractYears(1)
+  const minus1year = subtractYears(1)
   let endYear = false
   let fromDate = minus1year,
     toDate
 
-  var datesArr = []
+  const datesArr = []
 
   while (!endYear) {
     toDate = addDays(fromDate, 30)
@@ -151,8 +151,8 @@ const getDatesfromOneYearBack = () => {
  * @param {string} monto
  */
 function saveToCSV(datos, fecha, item, monto, fileName = false) {
-  var writer = csvWriter({ sendHeaders: false }) //Instantiate var
-  var csvFilename
+  let writer = csvWriter({ sendHeaders: false })
+  let csvFilename
   if (fileName) {
     csvFilename = `data/${fileName}.csv`
   } else if (datos) {
@@ -309,7 +309,7 @@ const getInvoiceFile = () =>
  */
 async function launchBrowser() {
   return await playwright.chromium.launch({
-    headless: process.env.VISUAL || false,
+    headless: process.env.VISUAL === 'true',
     args: ['--disable-dev-shm-usage'],
     ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
   })

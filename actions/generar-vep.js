@@ -4,10 +4,19 @@
 
 const { launchBrowser } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
+const logger = require('../helpers/logger.js')
 
+/**
+ * Genera Volante Electrónico de Pago (VEP) para monotributo
+ * @returns {Promise<void>}
+ * @throws {Error} Si falla la generación
+ */
 async function main() {
-  // disable headless to see the browser's action
-  const browser = await launchBrowser()
+  let browser
+  
+  try {
+    // disable headless to see the browser's action
+    browser = await launchBrowser()
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 
@@ -51,6 +60,15 @@ async function main() {
   //await navigationPromiseM;
 
   //await monotributoPage.waitForTimeout(1000);
-  //await browser.close();
+  } catch (error) {
+    logger.error('Error generando VEP:', error)
+    throw error
+  } finally {
+    if (browser) {
+      await browser.close().catch(err => 
+        logger.error('Error cerrando browser:', err)
+      )
+    }
+  }
 }
 main()

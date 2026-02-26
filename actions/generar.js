@@ -1,4 +1,5 @@
 const { dateFormatted, saveToCSV, launchBrowser } = require('../helpers/helper.js')
+const logger = require('../helpers/logger.js')
 
 const { login } = require('../pages/login.js')
 const { verTodos } = require('../pages/ver_todos.js')
@@ -15,10 +16,29 @@ const { confirmarDialogo } = require('../pages/confirmarDialogo.js')
 const { imprimirFactura } = require('../pages/imprimir_factura.js')
 const { menuPrincipal } = require('../pages/menu_principal.js')
 
+/**
+ * Genera facturas en AFIP mediante automatización de browser
+ * @param {Object} options - Opciones de generación
+ * @param {number} [options.cantidad=1] - Cantidad de facturas a generar
+ * @param {Object|null} [options.datos=null] - Datos específicos para factura nominada
+ * @param {string} [options.datos.cuitEmisor] - CUIT del emisor
+ * @param {string} [options.datos.password] - Contraseña del emisor
+ * @param {string} [options.datos.user] - CUIT del receptor
+ * @param {string} [options.datos.amount] - Monto de la factura
+ * @param {string} [options.datos.modoPago] - Modo de pago
+ * @param {string} [options.datos.tipoFactura] - Tipo de factura
+ * @param {string} [options.datos.descripcionItem] - Descripción del item
+ * @param {string} [options.datos.ivaReceptor] - Condición IVA del receptor
+ * @returns {Promise<Array<{detalle: string, valor: number, fecha: string}>>} Resultados de facturas generadas
+ * @throws {Error} Si falla la autenticación o generación
+ */
 async function generar({ cantidad = 1, datos = null}) {
+  let browser
   let resultados = []
-  // disable headless to see the browser's action
-  const browser = await launchBrowser()
+  
+  try {
+    // disable headless to see the browser's action
+    browser = await launchBrowser()
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 
@@ -70,9 +90,17 @@ async function generar({ cantidad = 1, datos = null}) {
     await menuPrincipal(facturadorPage)
   }
 
-  await browser.close()
-
   return resultados
+  } catch (error) {
+    logger.error('Error generando facturas:', error)
+    throw error
+  } finally {
+    if (browser) {
+      await browser.close().catch(err => 
+        logger.error('Error cerrando browser:', err)
+      )
+    }
+  }
 }
 
 module.exports = { generar }

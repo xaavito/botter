@@ -1,4 +1,5 @@
 const { saveToFacturacion, launchBrowser } = require('../helpers/helper.js')
+const logger = require('../helpers/logger.js')
 
 const { login } = require('../pages/login.js')
 const { verTodos } = require('../pages/ver_todos.js')
@@ -11,10 +12,18 @@ const { iterarTablaJig } = require('../pages/iterar_tabla.js')
 
 const { menuPrincipal } = require('../pages/menu_principal.js')
 
+/**
+ * Descarga facturas desde el portal de AFIP y las guarda en CSV
+ * @returns {Promise<void>}
+ * @throws {Error} Si falla la autenticación o descarga
+ */
 async function listarOnline() {
+  let browser
   let resultados = []
-  // disable headless to see the browser's action
-  const browser = await launchBrowser()
+  
+  try {
+    // disable headless to see the browser's action
+    browser = await launchBrowser()
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
 
@@ -45,9 +54,17 @@ async function listarOnline() {
 
   await menuPrincipal(facturadorPage)
 
-  await browser.close()
-
-  return;
+  return resultados
+  } catch (error) {
+    logger.error('Error listando facturas online:', error)
+    throw error
+  } finally {
+    if (browser) {
+      await browser.close().catch(err => 
+        logger.error('Error cerrando browser:', err)
+      )
+    }
+  }
 }
 
 module.exports = { listarOnline }
