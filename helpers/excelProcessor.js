@@ -118,8 +118,15 @@ class ExcelProcessor {
 
         logger.info(chalk.green(`✓ Fila ${i + 1} procesada exitosamente`))
       } catch (error) {
-        logger.error(`Error procesando ${datosNomindados.toString()}`)
-        error.push(datosNomindados.toString())
+        const errorInfo = {
+          fila: i + 1,
+          cuitEmisor: datosNomindados.cuitEmisor,
+          cuitReceptor: datosNomindados.user,
+          monto: datosNomindados.amount,
+          error: error.message || 'Error desconocido'
+        }
+        logger.error(`Error procesando fila ${i + 1}: CUIT Emisor: ${datosNomindados.cuitEmisor}, CUIT Receptor: ${datosNomindados.user}`)
+        errores.push(errorInfo)
       }
     }
 
@@ -129,7 +136,20 @@ class ExcelProcessor {
       )
     )
 
-    logger.info(chalk.red.bold(`\n✓ Errores: ${errores}`))
+    // Mostrar errores de forma legible
+    if (errores.length > 0) {
+      logger.info(chalk.red.bold(`\n❌ Total de errores: ${errores.length}`))
+      errores.forEach((err, index) => {
+        logger.error(chalk.red(`\nError ${index + 1}:`))
+        logger.error(chalk.red(`  Fila: ${err.fila}`))
+        logger.error(chalk.red(`  CUIT Emisor: ${err.cuitEmisor}`))
+        logger.error(chalk.red(`  CUIT Receptor: ${err.cuitReceptor}`))
+        logger.error(chalk.red(`  Monto: ${err.monto}`))
+        logger.error(chalk.red(`  Detalle: ${err.error}`))
+      })
+    } else {
+      logger.info(chalk.green.bold('\n✓ Sin errores'))
+    }
 
     return resultados
   }
@@ -166,6 +186,7 @@ class ExcelProcessor {
       tipoFactura: this.toStringSeguro(row[5]), // Columna F
       descripcionItem: this.toStringSeguro(row[6]), // Columna G
       ivaReceptor: this.toStringSeguro(row[7]), // Columna H
+      tipoGeneracion: 'excel', // Indica que es generación desde Excel
     }
 
     return datos

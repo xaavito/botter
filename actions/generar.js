@@ -35,7 +35,7 @@ const { menuPrincipal } = require('../pages/menu_principal.js')
 async function generar({ cantidad = 1, datos = null}) {
   let browser
   let resultados = []
-  
+
   try {
     // disable headless to see the browser's action
     browser = await launchBrowser()
@@ -83,7 +83,10 @@ async function generar({ cantidad = 1, datos = null}) {
 
     await imprimirFactura(facturadorPage, datos)
 
-    saveToCSV(datos, dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
+    // Solo guardar en CSV si NO es generación desde Excel
+    if (!datos || datos.tipoGeneracion !== 'excel') {
+      saveToCSV(datos, dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
+    }
 
     await facturadorPage.waitForTimeout(1000)
 
