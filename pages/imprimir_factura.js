@@ -9,7 +9,7 @@ const imprimirFactura = async (page, datos = null) => {
     page.click('input[value="Imprimir..."]'),
   ])
 
-  await download.saveAs(getInvoiceFile())
+  await download.saveAs(getInvoiceFile(datos))
 }
 
 module.exports = {

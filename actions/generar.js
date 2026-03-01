@@ -1,5 +1,7 @@
 const { dateFormatted, saveToCSV, launchBrowser } = require('../helpers/helper.js')
 const logger = require('../helpers/logger.js')
+const path = require('path')
+const fs = require('fs')
 
 const { login } = require('../pages/login.js')
 const { verTodos } = require('../pages/ver_todos.js')
@@ -39,8 +41,22 @@ async function generar({ cantidad = 1, datos = null}) {
   try {
     // disable headless to see the browser's action
     browser = await launchBrowser()
-  const context = await browser.newContext({ acceptDownloads: true })
-  const page = await context.newPage()
+    
+    // Determinar la carpeta de descargas según el tipo de generación
+    const isExcel = datos && datos.tipoGeneracion === 'excel'
+    const downloadsFolder = isExcel ? 'data/downloads' : 'invoices'
+    const downloadsPath = path.join(process.cwd(), downloadsFolder)
+    
+    // Asegurar que la carpeta existe
+    if (!fs.existsSync(downloadsPath)) {
+      fs.mkdirSync(downloadsPath, { recursive: true })
+    }
+    
+    const context = await browser.newContext({ 
+      acceptDownloads: true,
+      downloadsPath: downloadsPath
+    })
+    const page = await context.newPage()
 
   await page.setDefaultNavigationTimeout(0)
 

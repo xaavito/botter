@@ -298,10 +298,12 @@ const generateShortId = () => {
   return `${hours}${minutes}${seconds}${milliseconds}`
 }
 
-const getInvoiceFile = () =>
-  `./invoices/factura-${
-    process.env.USER_CUIL
-  }-${dateAsString()}-${generateShortId()}.pdf`
+const getInvoiceFile = (datos = null) => {
+  const isExcel = datos && datos.tipoGeneracion === 'excel'
+  const folder = isExcel ? 'data/downloads' : 'invoices'
+  const filename = `factura-${process.env.USER_CUIL}-${dateAsString()}-${generateShortId()}.pdf`
+  return path.join(process.cwd(), folder, filename)
+}
 
 /**
  * Lanza un browser de Playwright con la configuración estándar del proyecto
