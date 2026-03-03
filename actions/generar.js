@@ -1,4 +1,8 @@
-const { dateFormatted, saveToCSV, launchBrowser } = require('../helpers/helper.js')
+const {
+  dateFormatted,
+  saveToCSV,
+  launchBrowser,
+} = require('../helpers/helper.js')
 const logger = require('../helpers/logger.js')
 const path = require('path')
 const fs = require('fs')
@@ -7,7 +11,10 @@ const { login } = require('../pages/login.js')
 const { verTodos } = require('../pages/ver_todos.js')
 const { comprobantesEnLinea } = require('../pages/comprobantes_en_linea.js')
 const { generarComprobantes } = require('../pages/generar_comprobantes.js')
-const { seleccionarPuntoVenta, seleccionarEmpresa } = require('../pages/seleccionar_pto_vta.js')
+const {
+  seleccionarPuntoVenta,
+  seleccionarEmpresa,
+} = require('../pages/seleccionar_pto_vta.js')
 
 const { continuar } = require('../pages/continuar.js')
 const { cargarConcepto } = require('../pages/cargar_concepto.js')
@@ -34,90 +41,92 @@ const { menuPrincipal } = require('../pages/menu_principal.js')
  * @returns {Promise<Array<{detalle: string, valor: number, fecha: string}>>} Resultados de facturas generadas
  * @throws {Error} Si falla la autenticación o generación
  */
-async function generar({ cantidad = 1, datos = null}) {
+async function generar({ cantidad = 1, datos = null }) {
   let browser
   let resultados = []
 
   try {
     // disable headless to see the browser's action
     browser = await launchBrowser()
-    
+
     // Determinar la carpeta de descargas según el tipo de generación
     const isExcel = datos && datos.tipoGeneracion === 'excel'
     const downloadsFolder = isExcel ? 'data/downloads' : 'invoices'
     const downloadsPath = path.join(process.cwd(), downloadsFolder)
-    
+
     // Asegurar que la carpeta existe
     if (!fs.existsSync(downloadsPath)) {
       fs.mkdirSync(downloadsPath, { recursive: true })
     }
-    
-    const context = await browser.newContext({ 
+
+    const context = await browser.newContext({
       acceptDownloads: true,
-      downloadsPath: downloadsPath
+      downloadsPath: downloadsPath,
     })
     const page = await context.newPage()
 
-  await page.setDefaultNavigationTimeout(0)
+    await page.setDefaultNavigationTimeout(0)
 
-  await login(page, datos)
+    await login(page, datos)
 
-  await verTodos(page)
+    await verTodos(page)
 
-  await comprobantesEnLinea(page)
+    await comprobantesEnLinea(page)
 
-  let pages = await context.pages()
-  const facturadorPage = pages[1]
+    let pages = await context.pages()
+    const facturadorPage = pages[1]
 
-  await seleccionarEmpresa(facturadorPage)
+    await seleccionarEmpresa(facturadorPage)
 
-  for (let index = 1; index <= cantidad; index++) {
-    await generarComprobantes(facturadorPage)
+    for (let index = 1; index <= cantidad; index++) {
+      await generarComprobantes(facturadorPage)
 
-    await seleccionarPuntoVenta(facturadorPage)
+      await seleccionarPuntoVenta(facturadorPage)
 
-    await continuar(facturadorPage)
+      await continuar(facturadorPage)
 
-    await cargarConcepto(facturadorPage, datos)
+      await cargarConcepto(facturadorPage, datos)
 
-    await cargarIVAReceptor(facturadorPage, datos)
+      await cargarIVAReceptor(facturadorPage, datos)
 
-    const itemsFactura = await cargarItemFactura(
-      facturadorPage,
-      datos
-    )
+      const itemsFactura = await cargarItemFactura(facturadorPage, datos)
 
-    resultados.push({
-      detalle: itemsFactura.detalle,
-      valor: itemsFactura.valor,
-      fecha: dateFormatted(),
-    })
+      resultados.push({
+        detalle: itemsFactura.detalle,
+        valor: itemsFactura.valor,
+        fecha: dateFormatted(),
+      })
 
-    await confirmar(facturadorPage)
+      await confirmar(facturadorPage)
 
-    await confirmarDialogo(facturadorPage)
+      await confirmarDialogo(facturadorPage)
 
-    await imprimirFactura(facturadorPage, datos)
+      await imprimirFactura(facturadorPage, datos)
 
-    // Solo guardar en CSV si NO es generación desde Excel
-    if (!datos || datos.tipoGeneracion !== 'excel') {
-      saveToCSV(datos, dateFormatted(), itemsFactura.detalle, itemsFactura.valor)
+      // Solo guardar en CSV si NO es generación desde Excel
+      if (!datos || datos.tipoGeneracion !== 'excel') {
+        saveToCSV(
+          datos,
+          dateFormatted(),
+          itemsFactura.detalle,
+          itemsFactura.valor
+        )
+      }
+
+      await facturadorPage.waitForTimeout(1000)
+
+      await menuPrincipal(facturadorPage)
     }
 
-    await facturadorPage.waitForTimeout(1000)
-
-    await menuPrincipal(facturadorPage)
-  }
-
-  return resultados
+    return resultados
   } catch (error) {
     logger.error('Error generando facturas:', error)
     throw error
   } finally {
     if (browser) {
-      await browser.close().catch(err => 
-        logger.error('Error cerrando browser:', err)
-      )
+      await browser
+        .close()
+        .catch((err) => logger.error('Error cerrando browser:', err))
     }
   }
 }
