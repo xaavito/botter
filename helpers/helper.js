@@ -311,7 +311,7 @@ const getInvoiceFile = (datos = null) => {
  */
 async function launchBrowser() {
   return await playwright.chromium.launch({
-    headless: process.env.VISUAL === 'true',
+    headless: process.env.VISUAL !== 'false',
     args: ['--disable-dev-shm-usage'],
     ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
   })
