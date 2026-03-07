@@ -24,74 +24,75 @@ const logger = require('../helpers/logger.js')
  */
 async function main() {
   let browser
-  
+
   try {
     // disable headless to see the browser's action
     browser = await launchBrowser()
-  const context = await browser.newContext({ acceptDownloads: true })
-  const page = await context.newPage()
+    const context = await browser.newContext({ acceptDownloads: true })
+    const page = await context.newPage()
 
-  await page.setDefaultNavigationTimeout(0)
+    await page.setDefaultNavigationTimeout(0)
 
-  await login(page)
+    await login(page)
 
-  await verTodos(page)
+    await verTodos(page)
 
-  await misComprobantes(page)
+    await misComprobantes(page)
 
-  let pages = await context.pages()
-  const facturadorPage = pages[1]
+    let pages = await context.pages()
+    const facturadorPage = pages[1]
 
-  await emitidos(facturadorPage)
+    await emitidos(facturadorPage)
 
-  await consumidorFinal(facturadorPage)
+    await consumidorFinal(facturadorPage)
 
-  await puntoVentaModal(facturadorPage)
+    await puntoVentaModal(facturadorPage)
 
-  //REPETIR POR CADA FECHA
-  const datesArr = getDatesfromOneYearBack()
-  let totalAnual = 0
-  // datesArr.forEach(async e => {
-  for (const e of datesArr) {
-    await seleccionarFechas(facturadorPage, e)
+    //REPETIR POR CADA FECHA
+    const datesArr = getDatesfromOneYearBack()
+    let totalAnual = 0
+    // datesArr.forEach(async e => {
+    for (const e of datesArr) {
+      await seleccionarFechas(facturadorPage, e)
 
-    const valores = await obtenerValoresFacturas(facturadorPage)
+      const valores = await obtenerValoresFacturas(facturadorPage)
 
-    const count = await valores.rowsAmounts.count()
+      const count = await valores.rowsAmounts.count()
 
-    let valorFactura
-    for (let i = 0; i < count; ++i) {
-      valorFactura = sanitizeNumber(
-        await valores.rowsAmounts.nth(i).textContent()
-      )
+      let valorFactura
+      for (let i = 0; i < count; ++i) {
+        valorFactura = sanitizeNumber(
+          await valores.rowsAmounts.nth(i).textContent()
+        )
 
-      totalAnual += valorFactura
-      saveToCSV(null, 
-        await valores.rowsDates.nth(i).textContent(),
-        'sin detalle',
-        valorFactura,
-        'DetallesAnuales'
-      )
+        totalAnual += valorFactura
+        saveToCSV(
+          null,
+          await valores.rowsDates.nth(i).textContent(),
+          'sin detalle',
+          valorFactura,
+          'DetallesAnuales'
+        )
+      }
+      await consultar(facturadorPage)
     }
-    await consultar(facturadorPage)
-  }
 
-  logger.info(
-    `Total facturado desde ${datesArr[0].from} hasta ${
-      datesArr.slice(-1)[0].to
-    }: $${totalAnual}`
-  )
+    logger.info(
+      `Total facturado desde ${datesArr[0].from} hasta ${
+        datesArr.slice(-1)[0].to
+      }: $${totalAnual}`
+    )
 
-  // ToDo downgrade next timeout
-  await facturadorPage.waitForTimeout(10000)
+    // ToDo downgrade next timeout
+    await facturadorPage.waitForTimeout(10000)
   } catch (error) {
     logger.error('Error consultando facturación anual:', error)
     throw error
   } finally {
     if (browser) {
-      await browser.close().catch(err => 
-        logger.error('Error cerrando browser:', err)
-      )
+      await browser
+        .close()
+        .catch((err) => logger.error('Error cerrando browser:', err))
     }
   }
 }

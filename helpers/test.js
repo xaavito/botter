@@ -7,8 +7,7 @@ const {
   dateAsString,
   oneYearBefore,
   stringDateToActualDate,
-  randomValorV2
-
+  randomValorV2,
 } = require('./helper.js')
 
 const logger = require('./logger')

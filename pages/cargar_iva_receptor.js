@@ -10,7 +10,8 @@ const RRII = '1'
 
 const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
   if (comprobanteNominado) {
-    const ivaReceptor = comprobanteNominado.ivaReceptor === 'M' ? MONOTRIBUTO : RRII
+    const ivaReceptor =
+      comprobanteNominado.ivaReceptor === 'M' ? MONOTRIBUTO : RRII
     await page.selectOption('select[name="idIVAReceptor"]', ivaReceptor)
     await page.waitForTimeout(TIMEOUT)
     await page.fill(

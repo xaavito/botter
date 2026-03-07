@@ -6,8 +6,7 @@ async function excel() {
   const excelProcessor = new ExcelProcessor()
   const resultados = await excelProcessor.ejecutar(generar)
 
-  return resultados;
+  return resultados
 }
-
 
 module.exports = { excel }

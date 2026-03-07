@@ -20,49 +20,49 @@ const { menuPrincipal } = require('../pages/menu_principal.js')
 async function listarOnline() {
   let browser
   let resultados = []
-  
+
   try {
     // disable headless to see the browser's action
     browser = await launchBrowser()
-  const context = await browser.newContext({ acceptDownloads: true })
-  const page = await context.newPage()
+    const context = await browser.newContext({ acceptDownloads: true })
+    const page = await context.newPage()
 
-  await page.setDefaultNavigationTimeout(0)
+    await page.setDefaultNavigationTimeout(0)
 
-  await login(page)
+    await login(page)
 
-  await verTodos(page)
+    await verTodos(page)
 
-  await comprobantesEnLinea(page)
+    await comprobantesEnLinea(page)
 
-  let pages = await context.pages()
-  const facturadorPage = pages[1]
+    let pages = await context.pages()
+    const facturadorPage = pages[1]
 
-  await miPagina(facturadorPage)
+    await miPagina(facturadorPage)
 
-  await consultas(facturadorPage)
+    await consultas(facturadorPage)
 
-  await seleccionarFechaDesde(facturadorPage)
+    await seleccionarFechaDesde(facturadorPage)
 
-  await buscar(facturadorPage)
+    await buscar(facturadorPage)
 
-  resultados = await iterarTablaJig(facturadorPage)
+    resultados = await iterarTablaJig(facturadorPage)
 
-  saveToFacturacion(resultados)
+    saveToFacturacion(resultados)
 
-  await facturadorPage.waitForTimeout(1000)
+    await facturadorPage.waitForTimeout(1000)
 
-  await menuPrincipal(facturadorPage)
+    await menuPrincipal(facturadorPage)
 
-  return resultados
+    return resultados
   } catch (error) {
     logger.error('Error listando facturas online:', error)
     throw error
   } finally {
     if (browser) {
-      await browser.close().catch(err => 
-        logger.error('Error cerrando browser:', err)
-      )
+      await browser
+        .close()
+        .catch((err) => logger.error('Error cerrando browser:', err))
     }
   }
 }

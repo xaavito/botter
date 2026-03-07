@@ -301,8 +301,8 @@ const generateShortId = () => {
 const getInvoiceFile = (datos = null) => {
   const isExcel = datos && datos.tipoGeneracion === 'excel'
   const folder = isExcel ? 'data/downloads' : 'invoices'
-  let filename = '';
-  if (!isExcel) filename += `factura-${process.env.USER_CUIL}-`;
+  let filename = ''
+  if (!isExcel) filename += `factura-${process.env.USER_CUIL}-`
   filename += `${dateAsString()}-${generateShortId()}.pdf`
   return path.join(process.cwd(), folder, filename)
 }

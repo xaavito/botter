@@ -123,9 +123,11 @@ class ExcelProcessor {
           cuitEmisor: datosNomindados.cuitEmisor,
           cuitReceptor: datosNomindados.user,
           monto: datosNomindados.amount,
-          error: error.message || 'Error desconocido'
+          error: error.message || 'Error desconocido',
         }
-        logger.error(`Error procesando fila ${i + 1}: CUIT Emisor: ${datosNomindados.cuitEmisor}, CUIT Receptor: ${datosNomindados.user}`)
+        logger.error(
+          `Error procesando fila ${i + 1}: CUIT Emisor: ${datosNomindados.cuitEmisor}, CUIT Receptor: ${datosNomindados.user}`
+        )
         errores.push(errorInfo)
       }
     }
