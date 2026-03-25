@@ -1,12 +1,14 @@
 const { TIMEOUT } = require('../helpers/constants.js')
 
 // por ahora lo dejamos en contado y ya
-
 const CONTADO = 1
 const TRANSFERENCIA = 6
 
-const MONOTRIBUTO = '5'
-const RRII = '1'
+// resto
+const CONSUMIDOR_FINAL = '5' // Consumidor final
+// excel
+const MONOTRIBUTO = '6' // Responsable Monotributista
+const RRII = '1' //Responsable Inscripto
 
 const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
   if (comprobanteNominado) {
@@ -21,7 +23,7 @@ const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
     await page.waitForTimeout(TIMEOUT)
     await page.click('input#formadepago1')
   } else {
-    await page.selectOption('select[name="idIVAReceptor"]', '5')
+    await page.selectOption('select[name="idIVAReceptor"]', CONSUMIDOR_FINAL)
     await page.waitForTimeout(TIMEOUT)
     await page.click('input[name="formaDePago"]')
   }

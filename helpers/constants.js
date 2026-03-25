@@ -9,4 +9,4 @@ export const FACTURACION_ANUAL_ANTERIOR = 'Ver Facturacion Anual Año anterior'
 export const DESCARGAR_FACTURACION_ANUAL = 'Descargar Facturacion Anual de AFIP'
 export const INSERTAR_USUARIO = 'Insertar Usuario'
 export const EXCEL = 'Excel'
-export const TIMEOUT = 1000
+export const TIMEOUT = 1200
