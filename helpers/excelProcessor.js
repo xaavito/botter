@@ -9,6 +9,7 @@ class ExcelProcessor {
     this.dataFolderPath = dataFolderPath
     this.excelFile = null
     this.data = []
+    this.maxRetries = 2 // Número máximo de reintentos
   }
 
   /**
@@ -82,7 +83,7 @@ class ExcelProcessor {
   }
 
   /**
-   * Procesa cada fila del Excel y genera facturas
+   * Procesa cada fila del Excel y genera facturas con lógica de reintentos
    * @param {Function} generarCallback - Función callback para generar facturas
    * @returns {Array} Array de resultados
    */
@@ -93,41 +94,88 @@ class ExcelProcessor {
     }
 
     const resultados = []
-
     const errores = []
 
     // Iterar por cada fila del Excel
     for (let i = 0; i < this.data.length; i++) {
       const row = this.data[i]
-
-      this.logRowInfo(i + 1, this.data.length, row)
-
-      // Preparar datos para generar
       const datosNomindados = this.prepararDatos(row)
+      
+      let exito = false
+      let ultimoError = null
 
-      // Generar factura para esta fila
-      try {
-        const resultado = await generarCallback({
-          cantidad: 1,
-          datos: datosNomindados,
-        })
+      // Intentar procesar la fila con reintentos
+      for (let intento = 0; intento <= this.maxRetries && !exito; intento++) {
+        try {
+          if (intento > 0) {
+            logger.info(
+              chalk.yellow(
+                `🔄 Reintento ${intento} de ${this.maxRetries} para fila ${i + 1}`
+              )
+            )
+          }
 
-        if (resultado && resultado.length > 0) {
-          resultados.push(...resultado)
+          this.logRowInfo(i + 1, this.data.length, row)
+
+          const resultado = await generarCallback({
+            cantidad: 1,
+            datos: datosNomindados,
+          })
+
+          if (resultado && resultado.length > 0) {
+            resultados.push(...resultado)
+          }
+
+          logger.info(chalk.green(`✓ Fila ${i + 1} procesada exitosamente`))
+          exito = true
+        } catch (error) {
+          ultimoError = error
+
+          // Verificar si el error ocurrió después de confirmar
+          // Si la factura fue confirmada, NO reintentar
+          if (error.confirmacionExitosa) {
+            logger.error(
+              chalk.red(
+                `❌ Error en fila ${i + 1} después de confirmar. No se reintentará.`
+              )
+            )
+            logger.error(
+              chalk.red(`   Detalle: ${error.message || 'Error desconocido'}`)
+            )
+            break // Salir del loop de reintentos
+          }
+
+          // Si no fue confirmada y quedan reintentos, continuar
+          if (intento < this.maxRetries) {
+            logger.warn(
+              chalk.yellow(
+                `⚠️  Error en fila ${i + 1} (intento ${intento + 1}). Reintentando...`
+              )
+            )
+            logger.warn(chalk.yellow(`   Detalle: ${error.message}`))
+          } else {
+            logger.error(
+              chalk.red(
+                `❌ Error en fila ${i + 1} después de ${this.maxRetries + 1} intentos`
+              )
+            )
+            logger.error(
+              chalk.red(`   Detalle: ${error.message || 'Error desconocido'}`)
+            )
+          }
         }
+      }
 
-        logger.info(chalk.green(`✓ Fila ${i + 1} procesada exitosamente`))
-      } catch (error) {
+      // Si no tuvo éxito después de todos los intentos, registrar el error
+      if (!exito && ultimoError) {
         const errorInfo = {
           fila: i + 1,
           cuitEmisor: datosNomindados.cuitEmisor,
           cuitReceptor: datosNomindados.user,
           monto: datosNomindados.amount,
-          error: error.message || 'Error desconocido',
+          error: ultimoError.message || 'Error desconocido',
+          intentos: ultimoError.confirmacionExitosa ? 1 : this.maxRetries + 1,
         }
-        logger.error(
-          `Error procesando fila ${i + 1}: CUIT Emisor: ${datosNomindados.cuitEmisor}, CUIT Receptor: ${datosNomindados.user}`
-        )
         errores.push(errorInfo)
       }
     }
@@ -147,6 +195,7 @@ class ExcelProcessor {
         logger.error(chalk.red(`  CUIT Emisor: ${err.cuitEmisor}`))
         logger.error(chalk.red(`  CUIT Receptor: ${err.cuitReceptor}`))
         logger.error(chalk.red(`  Monto: ${err.monto}`))
+        logger.error(chalk.red(`  Intentos: ${err.intentos}`))
         logger.error(chalk.red(`  Detalle: ${err.error}`))
       })
     } else {

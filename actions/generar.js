@@ -79,43 +79,61 @@ async function generar({ cantidad = 1, datos = null }) {
     await seleccionarEmpresa(facturadorPage)
 
     for (let index = 1; index <= cantidad; index++) {
-      await generarComprobantes(facturadorPage)
+      let confirmacionExitosa = false
 
-      await seleccionarPuntoVenta(facturadorPage)
+      try {
+        await generarComprobantes(facturadorPage)
 
-      await continuar(facturadorPage)
+        await seleccionarPuntoVenta(facturadorPage)
 
-      await cargarConcepto(facturadorPage, datos)
+        await continuar(facturadorPage)
 
-      await cargarIVAReceptor(facturadorPage, datos)
+        await cargarConcepto(facturadorPage, datos)
 
-      const itemsFactura = await cargarItemFactura(facturadorPage, datos)
+        await cargarIVAReceptor(facturadorPage, datos)
 
-      resultados.push({
-        detalle: itemsFactura.detalle,
-        valor: itemsFactura.valor,
-        fecha: dateFormatted(),
-      })
+        const itemsFactura = await cargarItemFactura(facturadorPage, datos)
 
-      await confirmar(facturadorPage)
+        resultados.push({
+          detalle: itemsFactura.detalle,
+          valor: itemsFactura.valor,
+          fecha: dateFormatted(),
+        })
 
-      await confirmarDialogo(facturadorPage)
+        await confirmar(facturadorPage)
 
-      await imprimirFactura(facturadorPage, datos)
+        await confirmarDialogo(facturadorPage)
 
-      // Solo guardar en CSV si NO es generación desde Excel
-      if (!datos || datos.tipoGeneracion !== 'excel') {
-        saveToCSV(
-          datos,
-          dateFormatted(),
-          itemsFactura.detalle,
-          itemsFactura.valor
-        )
+        // Marcar que la confirmación fue exitosa
+        confirmacionExitosa = true
+
+        await imprimirFactura(facturadorPage, datos)
+
+        logger.info('✓ Factura confirmada e impresa exitosamente')
+
+        // Solo guardar en CSV si NO es generación desde Excel
+        if (!datos || datos.tipoGeneracion !== 'excel') {
+          saveToCSV(
+            datos,
+            dateFormatted(),
+            itemsFactura.detalle,
+            itemsFactura.valor
+          )
+        }
+
+        await facturadorPage.waitForTimeout(1000)
+
+        await menuPrincipal(facturadorPage)
+      } catch (error) {
+        // Si la confirmación fue exitosa, marcar el error para evitar reintentos
+        if (confirmacionExitosa) {
+          error.confirmacionExitosa = true
+          logger.error(
+            'Error después de confirmar la factura (no se reintentará)'
+          )
+        }
+        throw error
       }
-
-      await facturadorPage.waitForTimeout(1000)
-
-      await menuPrincipal(facturadorPage)
     }
 
     return resultados
