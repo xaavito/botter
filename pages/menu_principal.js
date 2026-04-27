@@ -1,8 +1,8 @@
-const { TIMEOUT } = require('../helpers/constants.js')
+const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
 
-async function menuPrincipal(page) {
-  await page.click('input[value="Menú Principal"]')
-  await page.waitForTimeout(TIMEOUT)
+async function menuPrincipal(facturadorPage) {
+  await facturadorPage.click('input[value="Menú Principal"]')
+  await esperarCargaPagina(facturadorPage)
 }
 
 module.exports = {

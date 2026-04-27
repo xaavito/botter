@@ -146,10 +146,13 @@ class ExcelProcessor {
             resultados.push(...resultado)
           }
 
-          logger.info(chalk.green(`✓ Fila ${i + 1} procesada exitosamente`))
+          logger.info(
+            chalk.green(`✓ Fila ${i + 1} procesada y factura confirmada exitosamente`)
+          )
           exito = true
         } catch (error) {
           ultimoError = error
+          const errorDetalle = this.extraerInfoError(error)
 
           // Verificar si el error ocurrió después de confirmar
           // Si la factura fue confirmada, NO reintentar
@@ -159,9 +162,7 @@ class ExcelProcessor {
                 `❌ Error en fila ${i + 1} después de confirmar. No se reintentará.`
               )
             )
-            logger.error(
-              chalk.red(`   Detalle: ${error.message || 'Error desconocido'}`)
-            )
+            logger.error(chalk.red(`   Detalle: ${errorDetalle}`))
             break // Salir del loop de reintentos
           }
 
@@ -172,9 +173,7 @@ class ExcelProcessor {
                 `❌ Error en fila ${i + 1}. No se reintentará (error de configuración/permisos).`
               )
             )
-            logger.error(
-              chalk.red(`   Detalle: ${error.message || 'Error desconocido'}`)
-            )
+            logger.error(chalk.red(`   Detalle: ${errorDetalle}`))
             break // Salir del loop de reintentos
           }
 
@@ -185,16 +184,14 @@ class ExcelProcessor {
                 `⚠️  Error en fila ${i + 1} (intento ${intento + 1}). Reintentando...`
               )
             )
-            logger.warn(chalk.yellow(`   Detalle: ${error.message}`))
+            logger.warn(chalk.yellow(`   Detalle: ${errorDetalle}`))
           } else {
             logger.error(
               chalk.red(
                 `❌ Error en fila ${i + 1} después de ${this.maxRetries + 1} intentos`
               )
             )
-            logger.error(
-              chalk.red(`   Detalle: ${error.message || 'Error desconocido'}`)
-            )
+            logger.error(chalk.red(`   Detalle: ${errorDetalle}`))
           }
         }
       }
@@ -206,8 +203,10 @@ class ExcelProcessor {
           cuitEmisor: datosNomindados.cuitEmisor,
           cuitReceptor: datosNomindados.user,
           monto: datosNomindados.amount,
-          error: ultimoError.message || 'Error desconocido',
-          intentos: ultimoError.confirmacionExitosa ? 1 : this.maxRetries + 1,
+          error: this.extraerInfoError(ultimoError),
+          intentos: ultimoError.confirmacionExitosa || ultimoError.noReintentar 
+            ? 1 
+            : this.maxRetries + 1,
         }
         errores.push(errorInfo)
       }
@@ -300,20 +299,57 @@ class ExcelProcessor {
    * @param {Array} row - Datos de la fila como array
    */
   logRowInfo(currentRow, totalRows, row) {
-    logger.info(
-      chalk.yellow(`\n--- Procesando fila ${currentRow} de ${totalRows} ---`)
-    )
+    // Formatear todos los datos en una sola línea
+    const datos = [
+      `Emisor: ${row[0] || 'N/A'}`,
+      `Receptor: ${row[2] || 'N/A'}`,
+      `Monto: ${row[3] || 'N/A'}`,
+      `Pago: ${row[4] || 'N/A'}`,
+      `Tipo: ${row[5] || 'N/A'}`,
+      row[6] ? `Desc: ${row[6]}` : null,
+    ]
+      .filter(Boolean)
+      .join(' | ')
 
-    // Leer por índice (ajustar según tu Excel)
-    logger.info(chalk.cyan(`[0] CUIT Emisor: ${row[0] || 'N/A'}`))
-    logger.info(chalk.cyan(`[1] Contraseña: ${row[1] ? '***' : 'N/A'}`))
-    logger.info(chalk.cyan(`[2] CUIT Receptor: ${row[2] || 'N/A'}`))
-    logger.info(chalk.cyan(`[3] Monto: ${row[3] || 'N/A'}`))
-    logger.info(chalk.cyan(`[4] Modo de pago: ${row[4] || 'N/A'}`))
-    logger.info(chalk.cyan(`[5] Tipo de factura: ${row[5] || 'N/A'}`))
-    if (row[6]) {
-      logger.info(chalk.cyan(`[6] Descripción: ${row[6]}`))
+    logger.info(
+      chalk.yellow(
+        `\n--- Fila ${currentRow}/${totalRows} --- ${chalk.cyan(datos)}`
+      )
+    )
+  }
+
+  /**
+   * Extrae información útil del stack trace para identificar dónde falló
+   * @param {Error} error - Error capturado
+   * @returns {string} Información formateada del stack trace
+   */
+  extraerInfoError(error) {
+    if (!error.stack) return error.message || 'Error desconocido'
+
+    const stack = error.stack.split('\n')
+    const mensaje = error.message || 'Error desconocido'
+
+    // Buscar la primera línea del stack que contenga info de archivo (no node_modules)
+    const lineaRelevante = stack
+      .slice(1) // Saltar la primera línea que es el mensaje
+      .find((line) => {
+        return (
+          line.includes('/pages/') ||
+          line.includes('/actions/') ||
+          line.includes('/helpers/')
+        )
+      })
+
+    if (lineaRelevante) {
+      // Extraer nombre del archivo y número de línea
+      const match = lineaRelevante.match(/\/(pages|actions|helpers)\/([^:)]+):(\d+)/)
+      if (match) {
+        const [, carpeta, archivo, linea] = match
+        return `${mensaje} [${carpeta}/${archivo}:${linea}]`
+      }
     }
+
+    return mensaje
   }
 
   /**

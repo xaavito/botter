@@ -1,8 +1,8 @@
-const { TIMEOUT } = require('../helpers/constants.js')
+const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
 
 async function continuar(page) {
   await page.click('input[value="Continuar >"]')
-  await page.waitForTimeout(TIMEOUT)
+  await esperarCargaPagina(page)
 }
 
 module.exports = {
