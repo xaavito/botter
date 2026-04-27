@@ -1,9 +1,9 @@
 const { getFirstDayOfActualYear } = require('../helpers/helper.js')
-const { TIMEOUT } = require('../helpers/constants.js')
+const { esperarMinimo } = require('../helpers/waitHelpers.js')
 
 async function seleccionarFechaDesde(page) {
   page.fill('input[name="fechaEmisionDesde"]', getFirstDayOfActualYear())
-  await page.waitForTimeout(TIMEOUT)
+  await esperarMinimo(page, 500)
 }
 
 module.exports = {

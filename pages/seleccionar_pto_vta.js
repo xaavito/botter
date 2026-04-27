@@ -1,11 +1,11 @@
-const { TIMEOUT } = require('../helpers/constants.js')
+const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
 
 async function seleccionarPuntoVenta(page) {
   await page.selectOption(
     'select[name="puntoDeVenta"]',
     process.env.N_PUNTO_VENTA || '1'
   )
-  await page.waitForTimeout(TIMEOUT)
+  await esperarCargaPagina(page)
 }
 
 /**
@@ -20,7 +20,7 @@ async function seleccionarEmpresa(page) {
   // Verificar que el botón existe
   if ((await botonEmpresa.count()) > 0) {
     await botonEmpresa.first().click()
-    await page.waitForTimeout(TIMEOUT)
+    await esperarCargaPagina(page)
   } else {
     throw new Error('No se encontró el botón de empresa')
   }
@@ -39,7 +39,7 @@ async function seleccionarEmpresaPorSubmit(page) {
 
   if ((await botonEmpresa.count()) > 0) {
     await botonEmpresa.first().click()
-    await page.waitForTimeout(TIMEOUT)
+    await esperarCargaPagina(page)
   } else {
     throw new Error('No se encontró el botón de empresa con submit')
   }
