@@ -104,6 +104,26 @@ class ExcelProcessor {
       let exito = false
       let ultimoError = null
 
+      // Validar CUIT del receptor ANTES de intentar procesar
+      try {
+        this.validarCUITReceptor(datosNomindados.user)
+      } catch (validationError) {
+        logger.error(
+          chalk.red(
+            `❌ Error de validación en fila ${i + 1}: ${validationError.message}`
+          )
+        )
+        errores.push({
+          fila: i + 1,
+          cuitEmisor: datosNomindados.cuitEmisor,
+          cuitReceptor: datosNomindados.user,
+          monto: datosNomindados.amount,
+          error: validationError.message,
+          intentos: 0,
+        })
+        continue // Saltar a la siguiente fila
+      }
+
       // Intentar procesar la fila con reintentos
       for (let intento = 0; intento <= this.maxRetries && !exito; intento++) {
         try {
@@ -137,6 +157,19 @@ class ExcelProcessor {
             logger.error(
               chalk.red(
                 `❌ Error en fila ${i + 1} después de confirmar. No se reintentará.`
+              )
+            )
+            logger.error(
+              chalk.red(`   Detalle: ${error.message || 'Error desconocido'}`)
+            )
+            break // Salir del loop de reintentos
+          }
+
+          // Verificar si el error no debe reintentarse (errores de permisos, validación, etc.)
+          if (error.noReintentar) {
+            logger.error(
+              chalk.red(
+                `❌ Error en fila ${i + 1}. No se reintentará (error de configuración/permisos).`
               )
             )
             logger.error(
@@ -241,6 +274,23 @@ class ExcelProcessor {
     }
 
     return datos
+  }
+
+  /**
+   * Valida que el CUIT/CUIL del receptor tenga exactamente 11 caracteres
+   * @param {string} cuit - CUIT/CUIL a validar
+   * @throws {Error} Si el CUIT no tiene 11 caracteres
+   */
+  validarCUITReceptor(cuit) {
+    // Remover guiones y espacios para contar solo dígitos
+    const cuitLimpio = cuit.replace(/[-\s]/g, '')
+    
+    if (cuitLimpio.length !== 11) {
+      throw new Error(
+        `El CUIT/CUIL del receptor debe tener exactamente 11 caracteres. ` +
+        `CUIT proporcionado: "${cuit}" (${cuitLimpio.length} caracteres)`
+      )
+    }
   }
 
   /**
