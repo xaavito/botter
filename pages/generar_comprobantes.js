@@ -1,8 +1,8 @@
-const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
-async function generarComprobantes(facturadorPage) {
-  await facturadorPage.click('text=Generar Comprobantes')
-  await esperarCargaPagina(facturadorPage)
+async function generarComprobantes(page) {
+  await page.click('text=Generar Comprobantes')
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 const { randomDetalle, randomValorV2 } = require('../helpers/helper.js')
-const { esperarMinimo } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
 const cargarItemFactura = async (page, comprobanteNominado = null) => {
   let valor = 0
@@ -13,11 +13,11 @@ const cargarItemFactura = async (page, comprobanteNominado = null) => {
   }
 
   await page.fill('input[name="detalleCodigoArticulo"]', '1')
-  await esperarMinimo(page, 300)
+  await page.waitForTimeout(TIMEOUT)
   await page.fill('textarea[name="detalleDescripcion"]', detalle)
-  await esperarMinimo(page, 300)
+  await page.waitForTimeout(TIMEOUT)
   await page.fill('input[name="detallePrecio"]', valor)
-  await esperarMinimo(page, 300)
+  await page.waitForTimeout(TIMEOUT)
   await page.click('input[value="Continuar >"]')
 
   return { detalle, valor }

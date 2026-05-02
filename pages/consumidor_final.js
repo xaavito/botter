@@ -1,8 +1,8 @@
-const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../constants.js')
 
 async function consumidorFinal(page) {
   await page.selectOption('select[id="tipoComprobante"]', '11')
-  await esperarCargaPagina(page)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {

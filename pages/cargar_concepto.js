@@ -1,8 +1,8 @@
-const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
 const cargarConcepto = async (page) => {
   await page.selectOption('select[name="idConcepto"]', '2')
-  await esperarCargaPagina(page)
+  await page.waitForTimeout(TIMEOUT)
   //TODO
   await page.click('input[value="Continuar >"]')
 }

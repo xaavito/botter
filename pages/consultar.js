@@ -1,8 +1,8 @@
-const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../constants.js')
 
 async function consultar(page) {
   await page.click('text=Consulta')
-  await esperarCargaPagina(page)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {

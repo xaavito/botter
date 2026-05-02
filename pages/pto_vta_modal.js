@@ -1,17 +1,17 @@
-const { esperarMinimo, esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../constants.js')
 
 async function puntoVentaModal(page) {
   await page.click('id=btnMostrarPuntosVentas')
-  await esperarMinimo(page, 500)
+  await page.waitForTimeout(TIMEOUT)
 
   await page.selectOption(
     'select[id="listaPuntosVentaModal"]',
     '00001'
   )
-  await esperarMinimo(page, 300)
+  await page.waitForTimeout(TIMEOUT)
 
   await page.click('id=btnAceptarModal')
-  await esperarCargaPagina(page)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-const { esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
 async function confirmarDialogo(page) {
   //confirmacion
@@ -13,7 +13,7 @@ async function confirmarDialogo(page) {
   // Hacer clic en el botón que contiene un span con el texto "Confirmar"
   await page.click('button:has(span:text("Confirmar"))')
 
-  await esperarCargaPagina(page)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {

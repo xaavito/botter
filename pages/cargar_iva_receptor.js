@@ -1,4 +1,4 @@
-const { esperarMinimo, esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../helpers/constants.js')
 
 // por ahora lo dejamos en contado y ya
 const CONTADO = 1
@@ -15,20 +15,20 @@ const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
     const ivaReceptor =
       comprobanteNominado.ivaReceptor === 'M' ? MONOTRIBUTO : RRII
     await page.selectOption('select[name="idIVAReceptor"]', ivaReceptor)
-    await esperarMinimo(page, 300)
+    await page.waitForTimeout(TIMEOUT)
     await page.fill(
       'input[name="nroDocReceptor"]',
       '' + comprobanteNominado.user
     )
-    await esperarMinimo(page, 300)
+    await page.waitForTimeout(TIMEOUT)
     await page.click('input#formadepago1')
   } else {
     await page.selectOption('select[name="idIVAReceptor"]', CONSUMIDOR_FINAL)
-    await esperarMinimo(page, 300)
+    await page.waitForTimeout(TIMEOUT)
     await page.click('input[name="formaDePago"]')
   }
 
-  await esperarCargaPagina(page)
+  await page.waitForTimeout(TIMEOUT)
   await page.click('input[value="Continuar >"]')
 }
 

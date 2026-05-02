@@ -1,24 +1,24 @@
 const { getFormatedDate } = require('../helper.js')
-const { esperarMinimo, esperarCargaPagina } = require('../helpers/waitHelpers.js')
+const { TIMEOUT } = require('../constants.js')
 
 async function seleccionarFechas(page, fechas) {
   await page.click('input[id="fechaEmision"]')
-  await esperarMinimo(page, 300)
+  await page.waitForTimeout(TIMEOUT)
   await page.type(
     'input[name="daterangepicker_start"]',
     getFormatedDate(fechas.from)
   )
-  await esperarMinimo(page, 300)
+  await page.waitForTimeout(TIMEOUT)
   await page.type(
     'input[name="daterangepicker_end"]',
     getFormatedDate(fechas.to)
   )
-  await esperarMinimo(page, 300)
+  await page.waitForTimeout(TIMEOUT)
   await page.click('text=Aplicar')
-  await esperarMinimo(page, 500)
+  await page.waitForTimeout(TIMEOUT)
 
   await page.click('text=Buscar')
-  await esperarCargaPagina(page)
+  await page.waitForTimeout(TIMEOUT)
 }
 
 module.exports = {
