@@ -222,13 +222,11 @@ class ExcelProcessor {
     if (errores.length > 0) {
       logger.info(chalk.red.bold(`\n❌ Total de errores: ${errores.length}`))
       errores.forEach((err, index) => {
-        logger.error(chalk.red(`\nError ${index + 1}:`))
-        logger.error(chalk.red(`  Fila: ${err.fila}`))
-        logger.error(chalk.red(`  CUIT Emisor: ${err.cuitEmisor}`))
-        logger.error(chalk.red(`  CUIT Receptor: ${err.cuitReceptor}`))
-        logger.error(chalk.red(`  Monto: ${err.monto}`))
-        logger.error(chalk.red(`  Intentos: ${err.intentos}`))
-        logger.error(chalk.red(`  Detalle: ${err.error}`))
+        logger.error(
+          chalk.red(
+            `❌ Error ${index + 1}: Fila ${err.fila} | Emisor: ${err.cuitEmisor} | Receptor: ${err.cuitReceptor} | Monto: ${err.monto} | Intentos: ${err.intentos} | ${err.error}`
+          )
+        )
       })
     } else {
       logger.info(chalk.green.bold('\n✓ Sin errores'))
