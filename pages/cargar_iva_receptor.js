@@ -14,8 +14,8 @@ const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
   if (comprobanteNominado) {
     const ivaReceptor =
       comprobanteNominado.ivaReceptor === 'M' ? MONOTRIBUTO : RRII
+    // Operaciones consecutivas sin timeouts redundantes
     await page.selectOption('select[name="idIVAReceptor"]', ivaReceptor)
-    await page.waitForTimeout(TIMEOUT_FILL)
     await page.fill(
       'input[name="nroDocReceptor"]',
       '' + comprobanteNominado.user

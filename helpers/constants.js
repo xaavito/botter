@@ -12,7 +12,7 @@ export const EXCEL = 'Excel'
 
 // Timeouts optimizados por tipo de acción
 export const TIMEOUT_CLICK = 400      // Para clicks simples (botones, enlaces)
-export const TIMEOUT_FILL = 300       // Para llenar campos de formulario
+export const TIMEOUT_FILL = 200       // Para llenar campos de formulario (optimizado)
 export const TIMEOUT_NAVIGATION = 800 // Para cambios de página/navegación
 
 // Mantener TIMEOUT para retrocompatibilidad (usar TIMEOUT_NAVIGATION por defecto)
