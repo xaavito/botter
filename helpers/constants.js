@@ -9,4 +9,11 @@ export const FACTURACION_ANUAL_ANTERIOR = 'Ver Facturacion Anual Año anterior'
 export const DESCARGAR_FACTURACION_ANUAL = 'Descargar Facturacion Anual de AFIP'
 export const INSERTAR_USUARIO = 'Insertar Usuario'
 export const EXCEL = 'Excel'
-export const TIMEOUT = 1200
+
+// Timeouts optimizados por tipo de acción
+export const TIMEOUT_CLICK = 400      // Para clicks simples (botones, enlaces)
+export const TIMEOUT_FILL = 300       // Para llenar campos de formulario
+export const TIMEOUT_NAVIGATION = 800 // Para cambios de página/navegación
+
+// Mantener TIMEOUT para retrocompatibilidad (usar TIMEOUT_NAVIGATION por defecto)
+export const TIMEOUT = TIMEOUT_NAVIGATION
