@@ -1,4 +1,4 @@
-const { TIMEOUT } = require('../helpers/constants.js')
+const { TIMEOUT_CLICK } = require('../helpers/constants.js')
 
 async function confirmarDialogo(page) {
   //confirmacion
@@ -13,7 +13,7 @@ async function confirmarDialogo(page) {
   // Hacer clic en el botón que contiene un span con el texto "Confirmar"
   await page.click('button:has(span:text("Confirmar"))')
 
-  await page.waitForTimeout(TIMEOUT)
+  await page.waitForTimeout(TIMEOUT_CLICK)
 }
 
 module.exports = {

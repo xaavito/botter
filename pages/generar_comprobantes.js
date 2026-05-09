@@ -1,8 +1,8 @@
-const { TIMEOUT } = require('../helpers/constants.js')
+const { TIMEOUT_NAVIGATION } = require('../helpers/constants.js')
 
 async function generarComprobantes(page) {
   await page.click('text=Generar Comprobantes')
-  await page.waitForTimeout(TIMEOUT)
+  await page.waitForTimeout(TIMEOUT_NAVIGATION)
 }
 
 module.exports = {
