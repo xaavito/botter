@@ -312,8 +312,9 @@ const getInvoiceFile = (datos = null) => {
  * @returns {Promise<Browser>} Browser de Playwright
  */
 async function launchBrowser() {
+  const isVisual = process.env.VISUAL === 'true'
   return await playwright.chromium.launch({
-    headless: process.env.VISUAL !== 'false',
+    headless: !isVisual,
     args: ['--disable-dev-shm-usage'],
     ...(process.env.CHROME === 'true' && { channel: 'chrome' }),
   })
