@@ -1,4 +1,4 @@
-const { TIMEOUT } = require('../helpers/constants.js')
+const { TIMEOUT_CLICK } = require('../helpers/constants.js')
 
 async function confirmar(page) {
   //confirmacion
@@ -12,7 +12,7 @@ async function confirmar(page) {
 
   await page.click('input[value="Confirmar Datos..."]')
 
-  await page.waitForTimeout(TIMEOUT)
+  await page.waitForTimeout(TIMEOUT_CLICK)
 }
 
 module.exports = {
