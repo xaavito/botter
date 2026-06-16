@@ -2,6 +2,7 @@ const {
   dateFormatted,
   saveToCSV,
   launchBrowser,
+  getExcelDownloadsFolder,
 } = require('../helpers/helper.js')
 const logger = require('../helpers/logger.js')
 const path = require('path')
@@ -38,6 +39,7 @@ const { menuPrincipal } = require('../pages/menu_principal.js')
  * @param {string} [options.datos.tipoFactura] - Tipo de factura
  * @param {string} [options.datos.descripcionItem] - Descripción del item
  * @param {string} [options.datos.ivaReceptor] - Condición IVA del receptor
+ * @param {string} [options.datos.runDate] - Fecha de corrida para organizar archivos (formato YYYYMMDD)
  * @returns {Promise<Array<{detalle: string, valor: number, fecha: string}>>} Resultados de facturas generadas
  * @throws {Error} Si falla la autenticación o generación
  */
@@ -51,8 +53,19 @@ async function generar({ cantidad = 1, datos = null }) {
 
     // Determinar la carpeta de descargas según el tipo de generación
     const isExcel = datos && datos.tipoGeneracion === 'excel'
-    const downloadsFolder = isExcel ? 'data/downloads' : 'invoices'
-    const downloadsPath = path.join(process.cwd(), downloadsFolder)
+    const runDate = datos && datos.runDate ? datos.runDate : null
+    
+    let downloadsPath
+    if (isExcel && runDate) {
+      // Modo Excel con carpeta por fecha
+      downloadsPath = getExcelDownloadsFolder(runDate)
+    } else if (isExcel) {
+      // Modo Excel sin carpeta por fecha
+      downloadsPath = path.join(process.cwd(), 'data/downloads')
+    } else {
+      // Modo normal
+      downloadsPath = path.join(process.cwd(), 'invoices')
+    }
 
     // Asegurar que la carpeta existe
     if (!fs.existsSync(downloadsPath)) {

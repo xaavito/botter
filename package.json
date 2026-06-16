@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@inquirer/input": "^1.2.14",
+    "adm-zip": "^0.5.17",
     "chalk": "^2.4.1",
     "csv-parser": "^3.0.0",
     "csv-write-stream": "^2.0.0",

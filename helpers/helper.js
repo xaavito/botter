@@ -298,9 +298,35 @@ const generateShortId = () => {
   return `${hours}${minutes}${seconds}${milliseconds}`
 }
 
-const getInvoiceFile = (datos = null) => {
+/**
+ * Obtiene la ruta de la carpeta de descargas para el modo Excel
+ * Si es modo Excel y runDate está definido, usa una carpeta con fecha YYYYMMDD
+ * @param {string|null} runDate - Fecha de corrida en formato YYYYMMDD (opcional)
+ * @returns {string} Ruta de la carpeta de descargas
+ */
+const getExcelDownloadsFolder = (runDate = null) => {
+  const baseFolder = 'data/downloads'
+  if (runDate) {
+    return path.join(process.cwd(), baseFolder, runDate)
+  }
+  return path.join(process.cwd(), baseFolder)
+}
+
+const getInvoiceFile = (datos = null, runDate = null) => {
   const isExcel = datos && datos.tipoGeneracion === 'excel'
-  const folder = isExcel ? 'data/downloads' : 'invoices'
+  let folder
+  
+  if (isExcel && runDate) {
+    // Modo Excel con carpeta por fecha
+    folder = path.join('data/downloads', runDate)
+  } else if (isExcel) {
+    // Modo Excel sin carpeta por fecha (legacy)
+    folder = 'data/downloads'
+  } else {
+    // Modo normal
+    folder = 'invoices'
+  }
+  
   let filename = ''
   if (!isExcel) filename += `factura-${process.env.USER_CUIL}-`
   filename += `${dateAsString()}-${generateShortId()}.pdf`
@@ -346,5 +372,6 @@ module.exports = {
   getFirstDayOfActualYear,
   generateShortId,
   getInvoiceFile,
+  getExcelDownloadsFolder,
   launchBrowser,
 }

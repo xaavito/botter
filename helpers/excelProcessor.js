@@ -3,6 +3,7 @@ const path = require('path')
 const xlsx = require('xlsx')
 const chalk = require('chalk')
 const logger = require('./logger')
+const { dateAsString } = require('./helper')
 
 class ExcelProcessor {
   constructor(dataFolderPath = '../data') {
@@ -10,6 +11,7 @@ class ExcelProcessor {
     this.excelFile = null
     this.data = []
     this.maxRetries = 2 // Número máximo de reintentos
+    this.runDate = dateAsString() // Fecha de corrida en formato YYYYMMDD
   }
 
   /**
@@ -268,6 +270,7 @@ class ExcelProcessor {
       descripcionItem: this.toStringSeguro(row[6]), // Columna G
       ivaReceptor: this.toStringSeguro(row[7]), // Columna H
       tipoGeneracion: 'excel', // Indica que es generación desde Excel
+      runDate: this.runDate, // Fecha de corrida para organizar archivos
     }
 
     return datos
