@@ -1,5 +1,6 @@
 const { randomDetalle, randomValorV2 } = require('../helpers/helper.js')
 const { TIMEOUT_FILL } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 const cargarItemFactura = async (page, comprobanteNominado = null) => {
   let valor = 0
@@ -17,7 +18,7 @@ const cargarItemFactura = async (page, comprobanteNominado = null) => {
   await page.fill('textarea[name="detalleDescripcion"]', detalle)
   await page.fill('input[name="detallePrecio"]', valor)
   // Solo esperar una vez al final antes del click
-  await page.waitForTimeout(TIMEOUT_FILL)
+  await waitForTimeoutWithRetry(page, TIMEOUT_FILL, null, 'Cargar Item Factura')
   await page.click('input[value="Continuar >"]')
 
   return { detalle, valor }

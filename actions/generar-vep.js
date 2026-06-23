@@ -4,6 +4,7 @@
 
 const { launchBrowser } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
 
 /**
@@ -32,7 +33,7 @@ async function main() {
     'text=Adhesión y/o empadronamiento al monotributo, modificación de datos e ingreso de claves de confirmación'
   )
 
-  await page.waitForTimeout(3000)
+  await waitForTimeoutWithRetry(page, 3000, null, 'Generar VEP - Monotributo')
 
   const pages = await context.pages()
   const monotributoPage = pages[1]
@@ -45,18 +46,18 @@ async function main() {
 
   // Pagina
   await monotributoPage.click('a[id="aBtn1"]')
-  await monotributoPage.waitForTimeout(1000)
+  await waitForTimeoutWithRetry(monotributoPage, 1000, null, 'Generar VEP - Botón 1')
   await navigationPromiseMonotributo
   //await navigationPromiseM;
   // Pagina
   //await monotributoPage.click('img[title="Pago mis cuentas"]');
   // aca quede..
   await monotributoPage.locator('img[title="Pago mis cuentas"]').click()
-  await monotributoPage.waitForTimeout(1000)
+  await waitForTimeoutWithRetry(monotributoPage, 1000, null, 'Generar VEP - Pago Cuentas')
   //await navigationPromiseM;
   // Pagina
   await monotributoPage.click('input[value="GENERAR VOLANTE DE PAGO"]')
-  await monotributoPage.waitForTimeout(1000)
+  await waitForTimeoutWithRetry(monotributoPage, 1000, null, 'Generar VEP - Volante')
   //await navigationPromiseM;
 
   //await monotributoPage.waitForTimeout(1000);

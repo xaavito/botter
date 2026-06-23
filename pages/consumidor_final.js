@@ -1,8 +1,9 @@
-const { TIMEOUT } = require('../constants.js')
+const { TIMEOUT } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 async function consumidorFinal(page) {
-  await page.selectOption('select[id="tipoComprobante"]', '11')
-  await page.waitForTimeout(TIMEOUT)
+  await page.selectOption('select[name="idConcepto"]', '2')
+  await waitForTimeoutWithRetry(page, TIMEOUT, null, 'Consumidor Final')
 }
 
 module.exports = {

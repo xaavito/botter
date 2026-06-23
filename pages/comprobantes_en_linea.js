@@ -1,4 +1,5 @@
 const { TIMEOUT_NAVIGATION } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
 
 async function comprobantesEnLinea(page) {
@@ -19,7 +20,7 @@ async function comprobantesEnLinea(page) {
   
   await page.click('text=Comprobantes en línea')
   // await page.waitForNavigation({ waitUntil: 'networkidle0' })
-  await page.waitForTimeout(TIMEOUT_NAVIGATION)
+  await waitForTimeoutWithRetry(page, TIMEOUT_NAVIGATION, null, 'Comprobantes en Línea')
 }
 
 module.exports = {

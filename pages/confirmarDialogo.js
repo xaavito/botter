@@ -1,4 +1,5 @@
-const { TIMEOUT_CLICK } = require('../helpers/constants.js')
+const { TIMEOUT_CLICK, TIMEOUT_NAVIGATION } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 async function confirmarDialogo(page) {
   //confirmacion
@@ -10,10 +11,13 @@ async function confirmarDialogo(page) {
       })
   )
 
+  // Esperar a que la página cargue antes de buscar el botón
+  await waitForTimeoutWithRetry(page, TIMEOUT_NAVIGATION, null, 'Confirmar Diálogo - Esperar Página')
+  
   // Hacer clic en el botón que contiene un span con el texto "Confirmar"
   await page.click('button:has(span:text("Confirmar"))')
 
-  await page.waitForTimeout(TIMEOUT_CLICK)
+  await waitForTimeoutWithRetry(page, TIMEOUT_CLICK, null, 'Confirmar Diálogo - Después Click')
 }
 
 module.exports = {

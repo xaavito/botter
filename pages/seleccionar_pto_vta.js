@@ -1,11 +1,12 @@
 const { TIMEOUT_FILL, TIMEOUT_NAVIGATION } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 async function seleccionarPuntoVenta(page) {
   await page.selectOption(
     'select[name="puntoDeVenta"]',
     process.env.N_PUNTO_VENTA || '1'
   )
-  await page.waitForTimeout(TIMEOUT_FILL)
+  await waitForTimeoutWithRetry(page, TIMEOUT_FILL, null, 'Seleccionar Punto Venta')
 }
 
 /**
@@ -14,16 +15,20 @@ async function seleccionarPuntoVenta(page) {
  * @param {Page} page - Instancia de la página de Playwright
  */
 async function seleccionarEmpresa(page) {
-  // Opción 1: Buscar por clase CSS (más genérico)
-  const botonEmpresa = await page.locator('input.btn_empresa[type="button"]')
-
-  // Verificar que el botón existe
-  if ((await botonEmpresa.count()) > 0) {
+  // Esperar primero a que la página cargue con timeout dinámico
+  await waitForTimeoutWithRetry(page, TIMEOUT_NAVIGATION, async () => {
+    // Buscar por clase CSS (más genérico)
+    const botonEmpresa = await page.locator('input.btn_empresa[type="button"]')
+    
+    // Verificar que el botón existe
+    const count = await botonEmpresa.count()
+    if (count === 0) {
+      throw new Error('No se encontró el botón de empresa')
+    }
+    
+    // Hacer click en el primer botón encontrado
     await botonEmpresa.first().click()
-    await page.waitForTimeout(TIMEOUT_NAVIGATION)
-  } else {
-    throw new Error('No se encontró el botón de empresa')
-  }
+  }, 'Seleccionar Empresa')
 }
 
 /**
@@ -39,7 +44,8 @@ async function seleccionarEmpresaPorSubmit(page) {
 
   if ((await botonEmpresa.count()) > 0) {
     await botonEmpresa.first().click()
-    await page.waitForTimeout(TIMEOUT_NAVIGATION)
+    // Usar waitForTimeoutWithRetry: reintenta con +20% y +40% si falla
+    await waitForTimeoutWithRetry(page, TIMEOUT_NAVIGATION, null, 'Seleccionar Empresa Submit')
   } else {
     throw new Error('No se encontró el botón de empresa con submit')
   }

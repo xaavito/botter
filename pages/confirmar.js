@@ -1,18 +1,8 @@
 const { TIMEOUT_CLICK } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 async function confirmar(page) {
-  //confirmacion
-  await page.evaluate(
-    () =>
-      // eslint-disable-next-line no-undef
-      (window.confirm = function () {
-        return true
-      })
-  )
-
-  await page.click('input[value="Confirmar Datos..."]')
-
-  await page.waitForTimeout(TIMEOUT_CLICK)
+  await waitForTimeoutWithRetry(page, TIMEOUT_CLICK, null, 'Confirmar')
 }
 
 module.exports = {

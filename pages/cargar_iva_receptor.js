@@ -1,4 +1,5 @@
 const { TIMEOUT_FILL, TIMEOUT_CLICK } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 // por ahora lo dejamos en contado y ya
 const CONTADO = 1
@@ -20,15 +21,15 @@ const cargarIVAReceptor = async (page, comprobanteNominado = null) => {
       'input[name="nroDocReceptor"]',
       '' + comprobanteNominado.user
     )
-    await page.waitForTimeout(TIMEOUT_FILL)
+    await waitForTimeoutWithRetry(page, TIMEOUT_FILL, null, 'Cargar IVA Receptor - Fill')
     await page.click('input#formadepago1')
   } else {
     await page.selectOption('select[name="idIVAReceptor"]', CONSUMIDOR_FINAL)
-    await page.waitForTimeout(TIMEOUT_FILL)
+    await waitForTimeoutWithRetry(page, TIMEOUT_FILL, null, 'Cargar IVA Receptor - Select')
     await page.click('input[name="formaDePago"]')
   }
 
-  await page.waitForTimeout(TIMEOUT_CLICK)
+  await waitForTimeoutWithRetry(page, TIMEOUT_CLICK, null, 'Cargar IVA Receptor - Click Continuar')
   await page.click('input[value="Continuar >"]')
 }
 

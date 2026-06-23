@@ -16,6 +16,7 @@ const {
   seleccionarPuntoVenta,
   seleccionarEmpresa,
 } = require('../pages/seleccionar_pto_vta.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 const { continuar } = require('../pages/continuar.js')
 const { cargarConcepto } = require('../pages/cargar_concepto.js')
@@ -138,7 +139,7 @@ async function generar({ cantidad = 1, datos = null }) {
           )
         }
 
-        await facturadorPage.waitForTimeout(1000)
+        await waitForTimeoutWithRetry(facturadorPage, 1000, null, 'Generar - Menu Principal')
 
         await menuPrincipal(facturadorPage)
       } catch (error) {

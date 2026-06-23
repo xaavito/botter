@@ -14,6 +14,7 @@ const { puntoVentaModal } = require('../pages/pto_vta_modal.js')
 const { seleccionarFechas } = require('../pages/seleccionar_fechas.js')
 const { obtenerValoresFacturas } = require('../pages/valores_facturas.js')
 const { consultar } = require('../pages/consultar.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
 const logger = require('../helpers/logger.js')
 
@@ -84,7 +85,7 @@ async function main() {
     )
 
     // ToDo downgrade next timeout
-    await facturadorPage.waitForTimeout(10000)
+    await waitForTimeoutWithRetry(facturadorPage, 10000, null, 'Consultar Anualizado - Final')
   } catch (error) {
     logger.error('Error consultando facturación anual:', error)
     throw error

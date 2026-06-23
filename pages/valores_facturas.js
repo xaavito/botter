@@ -1,23 +1,15 @@
-const { TIMEOUT } = require('../constants.js')
+const { TIMEOUT } = require('../helpers/constants.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 
-async function obtenerValoresFacturas(page) {
-  // Cambiar cantidad de items a 50 en la tabla (MEJORAR)
+async function valoresFacturas(page) {
+  await page.click('text=Ver todos')
+  await waitForTimeoutWithRetry(page, TIMEOUT, null, 'Valores Facturas - Ver Todos')
   await page.click('button.buttons-collection.buttons-page-length')
-  await page.waitForTimeout(TIMEOUT)
+  await waitForTimeoutWithRetry(page, TIMEOUT, null, 'Valores Facturas - Page Length')
   await page.locator('li.button-page-length').nth(3).click()
-  await page.waitForTimeout(TIMEOUT)
-
-  const rowsAmounts = await page.locator(
-    'table#tablaDataTables tr td.alignRight'
-  )
-
-  const rowsDates = await page.locator(
-    'table#tablaDataTables tr td:first-child'
-  )
-
-  return { rowsAmounts, rowsDates }
+  await waitForTimeoutWithRetry(page, TIMEOUT, null, 'Valores Facturas - Select Length')
 }
 
 module.exports = {
-  obtenerValoresFacturas,
+  valoresFacturas,
 }

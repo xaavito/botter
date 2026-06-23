@@ -7,6 +7,7 @@ const {
   launchBrowser,
 } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
 
 /**
@@ -36,7 +37,7 @@ async function main() {
     await login(page)
 
     await page.click('text=Comprobantes en línea')
-    await page.waitForTimeout(1000)
+    await waitForTimeoutWithRetry(page, 1000, null, 'Consultar - Comprobantes')
 
     let pages = await context.pages()
     const facturadorPage = pages[1]
@@ -48,7 +49,7 @@ async function main() {
     // Acceder a Consultas
     await navigationPromise
     await facturadorPage.click('text=Consultas')
-    await facturadorPage.waitForTimeout(1000)
+    await waitForTimeoutWithRetry(facturadorPage, 1000, null, 'Consultar - Consultas')
     // Search
     await navigationPromise
     await facturadorPage.fill(
@@ -56,11 +57,11 @@ async function main() {
       firstDayOfThisMonth
     )
     await facturadorPage.selectOption('select[name="idTipoComprobante"]', '11')
-    await facturadorPage.waitForTimeout(1000)
+    await waitForTimeoutWithRetry(facturadorPage, 1000, null, 'Consultar - Tipo Comprobante')
     await facturadorPage.selectOption('select[name="puntoDeVenta"]', '1')
-    await facturadorPage.waitForTimeout(1000)
+    await waitForTimeoutWithRetry(facturadorPage, 1000, null, 'Consultar - Punto de Venta')
     await facturadorPage.click('input[value="Buscar"]')
-    await facturadorPage.waitForTimeout(1000)
+    await waitForTimeoutWithRetry(facturadorPage, 1000, null, 'Consultar - Buscar')
     // Listado
 
     await navigationPromise
@@ -96,7 +97,7 @@ async function main() {
       )
     }
 
-    await facturadorPage.waitForTimeout(1000)
+    await waitForTimeoutWithRetry(facturadorPage, 1000, null, 'Consultar - Final')
   } catch (error) {
     logger.error('Error consultando facturas:', error)
     throw error

@@ -1,4 +1,5 @@
 const { saveToFacturacion, launchBrowser } = require('../helpers/helper.js')
+const { waitForTimeoutWithRetry } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
 
 const { login } = require('../pages/login.js')
@@ -50,7 +51,7 @@ async function listarOnline() {
 
     saveToFacturacion(resultados)
 
-    await facturadorPage.waitForTimeout(1000)
+    await waitForTimeoutWithRetry(facturadorPage, 1000, null, 'Listar Online - Final')
 
     await menuPrincipal(facturadorPage)
 
