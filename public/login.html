@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Facturador AFIP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #c62828;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        .spinner.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .security-note {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: #1565c0;
+        }
+
+        .security-note strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <div class="icon">🔐</div>
+            <h1>Acceso Seguro</h1>
+            <p>Facturador AFIP</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Usuario</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    required 
+                    autocomplete="username"
+                    placeholder="Ingresa tu usuario"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    autocomplete="current-password"
+                    placeholder="Ingresa tu contraseña"
+                >
+            </div>
+
+            <button type="submit" class="btn" id="loginBtn">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div class="spinner" id="spinner"></div>
+
+        <div class="security-note">
+            <strong>🔒 Conexión Segura</strong>
+            Tus credenciales están protegidas mediante cifrado.
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm')
+        const loginBtn = document.getElementById('loginBtn')
+        const spinner = document.getElementById('spinner')
+        const errorMessage = document.getElementById('errorMessage')
+        const usernameInput = document.getElementById('username')
+        const passwordInput = document.getElementById('password')
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const username = usernameInput.value.trim()
+            const password = passwordInput.value
+
+            if (!username || !password) {
+                showError('Por favor completa todos los campos')
+                return
+            }
+
+            // Mostrar spinner y deshabilitar botón
+            loginBtn.disabled = true
+            spinner.classList.add('show')
+            errorMessage.classList.remove('show')
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                })
+
+                const data = await response.json()
+
+                if (response.ok && data.success) {
+                    // Login exitoso - redirigir
+                    window.location.href = '/'
+                } else {
+                    showError(data.error || 'Credenciales inválidas')
+                    loginBtn.disabled = false
+                }
+            } catch (error) {
+                showError('Error de conexión. Intenta nuevamente.')
+                loginBtn.disabled = false
+            } finally {
+                spinner.classList.remove('show')
+            }
+        })
+
+        function showError(message) {
+            errorMessage.textContent = message
+            errorMessage.classList.add('show')
+            
+            // Shake animation
+            errorMessage.style.animation = 'shake 0.5s'
+            setTimeout(() => {
+                errorMessage.style.animation = ''
+            }, 500)
+        }
+
+        // Focus automático en el campo de usuario
+        usernameInput.focus()
+
+        // Limpiar error al escribir
+        usernameInput.addEventListener('input', () => {
+            errorMessage.classList.remove('show')
+        })
+        
+        passwordInput.addEventListener('input', () => {
+            errorMessage.classList.remove('show')
+        })
+    </script>
+</body>
+</html>

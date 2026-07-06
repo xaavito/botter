@@ -115,6 +115,8 @@ async function generar({ cantidad = 1, datos = null }) {
           detalle: itemsFactura.detalle,
           valor: itemsFactura.valor,
           fecha: dateFormatted(),
+          cuitEmisor: datos?.cuitEmisor || process.env.USER_CUIL || 'N/A',
+          cuitReceptor: datos?.user || 'N/A',
         })
 
         await confirmar(facturadorPage)

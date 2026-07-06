@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturador AFIP - Carga de Excel</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .upload-area h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .upload-area p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .selected-file {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .selected-file.show {
+            display: block;
+        }
+
+        .selected-file h4 {
+            color: #2e7d32;
+            margin-bottom: 5px;
+        }
+
+        .selected-file p {
+            color: #666;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .log-container {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry.info {
+            color: #2196F3;
+        }
+
+        .log-entry.success {
+            color: #4CAF50;
+        }
+
+        .log-entry.error {
+            color: #f44336;
+        }
+
+        .log-entry.row {
+            color: #666;
+        }
+
+        .log-entry.row-success {
+            color: #4CAF50;
+        }
+
+        .log-entry.row-error {
+            color: #f44336;
+        }
+
+        .results {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 15px 0;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h4 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            color: #333;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .error-list {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #f44336;
+        }
+
+        .error-list h4 {
+            color: #c62828;
+            margin-bottom: 10px;
+        }
+
+        .error-item {
+            padding: 8px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .results table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results th,
+        .results td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #c8e6c9;
+        }
+
+        .results th {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        .spinner.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧾 Facturador AFIP</h1>
+            <p>Generación masiva de facturas desde Excel</p>
+            <button onclick="logout()" style="position: absolute; top: 20px; right: 20px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                🚪 Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="instructions">
+            <h4>📋 Formato del Excel requerido:</h4>
+            <ul>
+                <li>Columna A: CUIT Emisor</li>
+                <li>Columna B: Contraseña Emisor</li>
+                <li>Columna C: CUIT Receptor (11 dígitos)</li>
+                <li>Columna D: Monto</li>
+                <li>Columna E: Modo de Pago</li>
+                <li>Columna F: Tipo de Factura</li>
+                <li>Columna G: Descripción del Item</li>
+                <li>Columna H: IVA Receptor</li>
+            </ul>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📄</div>
+            <h3>Arrastra tu archivo Excel aquí</h3>
+            <p>o haz click para seleccionar</p>
+            <button class="btn" type="button" onclick="document.getElementById('fileInput').click()">
+                Seleccionar Archivo
+            </button>
+            <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv">
+        </div>
+
+        <div class="selected-file" id="selectedFile">
+            <h4>📎 Archivo seleccionado:</h4>
+            <p id="fileName"></p>
+            <button class="btn" id="processBtn" onclick="processFile()">
+                🚀 Procesar Facturas
+            </button>
+        </div>
+
+        <div class="spinner" id="spinner"></div>
+
+        <div class="progress-container" id="progressContainer">
+            <h3>Progreso</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+
+        <div class="results" id="results">
+            <h3>✅ Resultados</h3>
+            <div id="statsContainer" class="stats-container"></div>
+            <button class="download-btn" id="downloadBtn" onclick="downloadResults()" style="display:none;">
+                📥 Descargar Resultados (CSV)
+            </button>
+            <div id="resultsContent"></div>
+            <div id="errorList" class="error-list" style="display:none;">
+                <h4>⚠️ Errores Encontrados</h4>
+                <div id="errorItems"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let selectedFile = null;
+
+        // Elementos del DOM
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFileDiv = document.getElementById('selectedFile');
+        const fileName = document.getElementById('fileName');
+        const processBtn = document.getElementById('processBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const logContainer = document.getElementById('logContainer');
+        const resultsDiv = document.getElementById('results');
+        const resultsContent = document.getElementById('resultsContent');
+        const spinner = document.getElementById('spinner');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const statsContainer = document.getElementById('statsContainer');
+        const errorList = document.getElementById('errorList');
+        const errorItems = document.getElementById('errorItems');
+
+        let currentResults = [];
+        let currentZipFile = null;
+        let currentPdfCount = 0;
+        let processingStats = {
+            total: 0,
+            successful: 0,
+            failed: 0,
+            errors: []
+        };
+
+        // Eventos de drag & drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // Evento de selección de archivo
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+                alert('Por favor selecciona un archivo Excel (.xlsx, .xls) o CSV');
+                return;
+            }
+
+            selectedFile = file;
+            fileName.textContent = file.name;
+            selectedFileDiv.classList.add('show');
+            resultsDiv.classList.remove('show');
+            progressContainer.classList.remove('show');
+        }
+
+        async function processFile() {
+            if (!selectedFile) return;
+
+            // Resetear UI
+            logContainer.innerHTML = '';
+            resultsDiv.classList.remove('show');
+            progressContainer.classList.add('show');
+            processBtn.disabled = true;
+            spinner.classList.add('show');
+            currentZipFile = null;
+            currentPdfCount = 0;
+
+            // Preparar FormData
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('socketId', socket.id);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    addLog(`✅ ${result.message}`, 'success');
+                    
+                    // Guardar nombre del archivo ZIP si está disponible
+                    if (result.zipFile) {
+                        currentZipFile = result.zipFile;
+                        currentPdfCount = result.pdfCount || 0;
+                    }
+                } else {
+                    addLog(`❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                addLog(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                processBtn.disabled = false;
+                spinner.classList.remove('show');
+            }
+        }
+
+        // Escuchar eventos de progreso por WebSocket
+        socket.on('progress', (data) => {
+            if (data.type === 'info') {
+                addLog(`ℹ️ ${data.message}`, 'info');
+                processingStats.total = 0;
+                processingStats.successful = 0;
+                processingStats.failed = 0;
+                processingStats.errors = [];
+            } else if (data.type === 'row-start') {
+                const percent = Math.round((data.currentRow / data.totalRows) * 100);
+                progressFill.style.width = `${percent}%`;
+                progressFill.textContent = `${percent}%`;
+                
+                processingStats.total = data.totalRows;
+                
+                addLog(
+                    `⏳ Fila ${data.currentRow}/${data.totalRows} - ` +
+                    `Emisor: ${data.emisor} | Receptor: ${data.receptor} | Monto: ${data.monto}`,
+                    'row'
+                );
+            } else if (data.type === 'row-success') {
+                addLog(
+                    `✓ Fila ${data.currentRow}/${data.totalRows} - ` +
+                    `Emisor: ${data.emisor} | Receptor: ${data.receptor} | Monto: ${data.monto} - EXITOSA`,
+                    'row-success'
+                );
+            } else if (data.type === 'row-error') {
+                addLog(
+                    `✗ Fila ${data.currentRow}/${data.totalRows} - ` +
+                    `Emisor: ${data.emisor} | Receptor: ${data.receptor} | Monto: ${data.monto} - ERROR`,
+                    'row-error'
+                );
+            } else if (data.type === 'complete') {
+                progressFill.style.width = '100%';
+                progressFill.textContent = '100%';
+                addLog(`🎉 ${data.message}`, 'success');
+                
+                processingStats.successful = data.resultados ? data.resultados.length : 0;
+                processingStats.failed = processingStats.total - processingStats.successful;
+                
+                // Guardar info del ZIP si está disponible
+                if (data.zipAvailable) {
+                    currentPdfCount = data.pdfCount || 0;
+                    addLog(`📦 ZIP con ${currentPdfCount} facturas PDF creado`, 'success');
+                }
+                
+                // Mostrar resultados
+                showResults(data.resultados, data.zipAvailable, data.pdfCount);
+            } else if (data.type === 'error') {
+                addLog(`❌ Error: ${data.message}`, 'error');
+                processingStats.errors.push(data.message);
+                processingStats.failed++;
+            }
+        });
+
+        function addLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function showResults(facturas, zipAvailable = false, pdfCount = 0) {
+            currentResults = facturas || [];
+            
+            // Mostrar estadísticas
+            showStats();
+            
+            if (!facturas || facturas.length === 0) {
+                resultsContent.innerHTML = '<p>No se generaron facturas</p>';
+                resultsDiv.classList.add('show');
+                showErrors();
+                return;
+            }
+
+            // Calcular total facturado
+            const totalFacturado = facturas.reduce((sum, f) => sum + (Number(f.valor) || 0), 0);
+
+            let html = `<p style="font-weight: bold; color: #2e7d32; margin-bottom: 10px;">
+                Total Facturado: $${totalFacturado.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            </p>`;
+            
+            // Si hay ZIP disponible, mostrar info
+            if (zipAvailable && pdfCount > 0) {
+                html += `<p style="color: #1976d2; margin-bottom: 15px;">
+                    📄 ${pdfCount} facturas PDF generadas y comprimidas en ZIP
+                </p>`;
+            }
+            
+            html += '<table><thead><tr><th>Fecha</th><th>CUIT Emisor</th><th>CUIT Receptor</th><th>Detalle</th><th>Monto</th></tr></thead><tbody>';
+            
+            facturas.forEach(factura => {
+                html += `<tr>
+                    <td>${factura.fecha || 'N/A'}</td>
+                    <td>${factura.cuitEmisor || 'N/A'}</td>
+                    <td>${factura.cuitReceptor || 'N/A'}</td>
+                    <td>${factura.detalle || 'N/A'}</td>
+                    <td>$${factura.valor ? Number(factura.valor).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'N/A'}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            resultsContent.innerHTML = html;
+            resultsDiv.classList.add('show');
+            
+            // Mostrar botón de descarga apropiado
+            if (zipAvailable && currentZipFile) {
+                downloadBtn.style.display = 'block';
+                downloadBtn.innerHTML = `📦 Descargar Facturas PDF (ZIP - ${pdfCount} archivos)`;
+                downloadBtn.onclick = downloadPDFs;
+            } else {
+                downloadBtn.style.display = 'block';
+                downloadBtn.innerHTML = '📥 Descargar Resumen (CSV)';
+                downloadBtn.onclick = downloadResults;
+            }
+            
+            showErrors();
+        }
+
+        function showStats() {
+            if (processingStats.total === 0) return;
+
+            const successRate = ((processingStats.successful / processingStats.total) * 100).toFixed(1);
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <h4>Total Procesadas</h4>
+                    <div class="value">${processingStats.total}</div>
+                </div>
+                <div class="stat-card" style="border-left-color: #4CAF50;">
+                    <h4>Exitosas</h4>
+                    <div class="value" style="color: #4CAF50;">${processingStats.successful}</div>
+                </div>
+                <div class="stat-card" style="border-left-color: #f44336;">
+                    <h4>Fallidas</h4>
+                    <div class="value" style="color: #f44336;">${processingStats.failed}</div>
+                </div>
+                <div class="stat-card" style="border-left-color: #FF9800;">
+                    <h4>Tasa de Éxito</h4>
+                    <div class="value" style="color: #FF9800;">${successRate}%</div>
+                </div>
+            `;
+        }
+
+        function showErrors() {
+            if (processingStats.errors.length === 0) {
+                errorList.style.display = 'none';
+                return;
+            }
+
+            errorList.style.display = 'block';
+            errorItems.innerHTML = processingStats.errors.map((error, index) => 
+                `<div class="error-item">${index + 1}. ${error}</div>`
+            ).join('');
+        }
+
+        async function downloadPDFs() {
+            if (!currentZipFile) {
+                alert('No hay archivo ZIP para descargar');
+                return;
+            }
+
+            try {
+                addLog('📦 Descargando ZIP con facturas PDF...', 'info');
+                
+                // Descargar el archivo ZIP
+                window.location.href = `/download-pdfs/${currentZipFile}`;
+                
+                setTimeout(() => {
+                    addLog('✅ Descarga de ZIP iniciada', 'success');
+                }, 500);
+            } catch (error) {
+                addLog(`❌ Error al descargar ZIP: ${error.message}`, 'error');
+            }
+        }
+
+        async function downloadResults() {
+            if (currentResults.length === 0) {
+                alert('No hay resultados para descargar');
+                return;
+            }
+
+            try {
+                const response = await fetch('/export-results', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ facturas: currentResults })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al descargar resultados');
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `facturas_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                addLog('✅ Resumen CSV descargado exitosamente', 'success');
+            } catch (error) {
+                addLog(`❌ Error al descargar: ${error.message}`, 'error');
+            }
+        }
+
+        async function logout() {
+            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                try {
+                    await fetch('/logout', { method: 'POST' });
+                    window.location.href = '/login';
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    window.location.href = '/login';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

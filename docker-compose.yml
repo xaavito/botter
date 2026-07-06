@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  facturador-afip:
+    build: .
+    container_name: botter-afip
+    restart: unless-stopped
+    
+    # Puerto (solo si NO usas Cloudflare Tunnel)
+    # Si usas Cloudflare Tunnel, comenta esta línea
+    ports:
+      - "3000:3000"
+    
+    # Variables de entorno
+    environment:
+      # AFIP Credentials
+      - USER_CUIL=${USER_CUIL}
+      - USER_PASS=${USER_PASS}
+      - USER_NAME=${USER_NAME}
+      - TOPE_FACTURA=${TOPE_FACTURA:-205000}
+      - N_PUNTO_VENTA=${N_PUNTO_VENTA:-1}
+      - PORCENTAJES_FACTURACION=${PORCENTAJES_FACTURACION:-["10","15","5","20"]}
+      - DETALLES=${DETALLES:-["Servicios IT","Consultoría"]}
+      - CHROME=false
+      
+      # Server config
+      - PORT=3000
+      - NODE_ENV=production
+      
+      # AUTENTICACIÓN - CAMBIAR ESTOS VALORES!
+      - AUTH_USERNAME=${AUTH_USERNAME:-admin}
+      - AUTH_PASSWORD=${AUTH_PASSWORD:-cambiar-este-password-123}
+      - SESSION_SECRET=${SESSION_SECRET:-cambiar-este-secret-xyz789}
+    
+    # Volúmenes para persistir datos
+    volumes:
+      - ./data:/app/data
+      - ./invoices:/app/invoices
+    
+    # Límites de recursos (ajustar según tu Raspberry Pi)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Red personalizada
+networks:
+  default:
+    name: botter-network
