@@ -284,12 +284,53 @@
         }
 
         .error-item {
-            padding: 8px;
+            padding: 10px;
             background: white;
-            margin: 5px 0;
+            margin: 6px 0;
             border-radius: 5px;
             font-size: 0.9em;
-            color: #666;
+            color: #444;
+            border-left: 3px solid #f44336;
+        }
+
+        .error-item .fila-badge {
+            display: inline-block;
+            background: #f44336;
+            color: white;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 8px;
+            font-size: 0.85em;
+        }
+
+        .error-item .error-detalle {
+            color: #c62828;
+            font-style: italic;
+        }
+
+        .resumen-ejecutivo {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .resumen-ejecutivo h4 {
+            color: #0d47a1;
+            margin-bottom: 12px;
+        }
+
+        .resumen-ejecutivo .resumen-linea {
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .resumen-ejecutivo .resumen-linea b {
+            display: inline-block;
+            min-width: 24px;
         }
 
         .results table {
@@ -406,13 +447,21 @@
 
         <div class="results" id="results">
             <h3>✅ Resultados</h3>
+
+            <div class="resumen-ejecutivo" id="resumenEjecutivo" style="display:none;">
+                <h4>📊 Resumen Ejecutivo</h4>
+                <div class="resumen-linea">Total de filas procesadas: <b id="resumenTotal">0</b></div>
+                <div class="resumen-linea">✓ Facturas generadas OK: <b id="resumenOk" style="color:#2e7d32;">0</b></div>
+                <div class="resumen-linea">✗ Filas con error: <b id="resumenFallidas" style="color:#c62828;">0</b></div>
+            </div>
+
             <div id="statsContainer" class="stats-container"></div>
             <button class="download-btn" id="downloadBtn" onclick="downloadResults()" style="display:none;">
                 📥 Descargar Resultados (CSV)
             </button>
             <div id="resultsContent"></div>
             <div id="errorList" class="error-list" style="display:none;">
-                <h4>⚠️ Errores Encontrados</h4>
+                <h4>⚠️ Filas con Error (revisar manualmente)</h4>
                 <div id="errorItems"></div>
             </div>
         </div>
@@ -438,6 +487,10 @@
         const statsContainer = document.getElementById('statsContainer');
         const errorList = document.getElementById('errorList');
         const errorItems = document.getElementById('errorItems');
+        const resumenEjecutivo = document.getElementById('resumenEjecutivo');
+        const resumenTotal = document.getElementById('resumenTotal');
+        const resumenOk = document.getElementById('resumenOk');
+        const resumenFallidas = document.getElementById('resumenFallidas');
 
         let currentResults = [];
         let currentZipFile = null;
@@ -446,7 +499,7 @@
             total: 0,
             successful: 0,
             failed: 0,
-            errors: []
+            errors: [] // Puede contener strings (errores generales) u objetos { fila, cuitEmisor, cuitReceptor, monto, error } (errores por fila)
         };
 
         // Eventos de drag & drop
@@ -522,6 +575,15 @@
                         currentZipFile = result.zipFile;
                         currentPdfCount = result.pdfCount || 0;
                     }
+
+                    // Si por algún motivo no llegó el evento 'complete' por socket,
+                    // igual mostramos el resumen ejecutivo con lo que devuelve el POST /upload
+                    if (result.errores && processingStats.errors.length === 0) {
+                        processingStats.errors = result.errores;
+                    }
+                    if (result.totalFilas) {
+                        processingStats.total = result.totalFilas;
+                    }
                 } else {
                     addLog(`❌ Error: ${result.error}`, 'error');
                 }
@@ -571,16 +633,36 @@
                 addLog(`🎉 ${data.message}`, 'success');
                 
                 processingStats.successful = data.resultados ? data.resultados.length : 0;
+
+                // Detalle de filas con error, provisto por el backend (resumen ejecutivo)
+                if (data.errores) {
+                    processingStats.errors = data.errores;
+                }
+                if (data.totalFilas) {
+                    processingStats.total = data.totalFilas;
+                }
                 processingStats.failed = processingStats.total - processingStats.successful;
                 
                 // Guardar info del ZIP si está disponible
                 if (data.zipAvailable) {
                     currentPdfCount = data.pdfCount || 0;
+                    if (data.zipFile) {
+                        currentZipFile = data.zipFile;
+                    }
                     addLog(`📦 ZIP con ${currentPdfCount} facturas PDF creado`, 'success');
                 }
                 
                 // Mostrar resultados
                 showResults(data.resultados, data.zipAvailable, data.pdfCount);
+
+                // Descargar automáticamente el ZIP si está disponible
+                if (data.zipAvailable && currentZipFile) {
+                    addLog('📦 Descargando ZIP automáticamente...', 'info');
+                    setTimeout(() => {
+                        downloadPDFs();
+                    }, 800);
+                }
+
             } else if (data.type === 'error') {
                 addLog(`❌ Error: ${data.message}`, 'error');
                 processingStats.errors.push(data.message);
@@ -599,7 +681,8 @@
         function showResults(facturas, zipAvailable = false, pdfCount = 0) {
             currentResults = facturas || [];
             
-            // Mostrar estadísticas
+            // Mostrar resumen ejecutivo (total, OK, fallidas) y estadísticas
+            showResumenEjecutivo();
             showStats();
             
             if (!facturas || facturas.length === 0) {
@@ -653,6 +736,18 @@
             showErrors();
         }
 
+        function showResumenEjecutivo() {
+            if (processingStats.total === 0) {
+                resumenEjecutivo.style.display = 'none';
+                return;
+            }
+
+            resumenTotal.textContent = processingStats.total;
+            resumenOk.textContent = processingStats.successful;
+            resumenFallidas.textContent = processingStats.failed;
+            resumenEjecutivo.style.display = 'block';
+        }
+
         function showStats() {
             if (processingStats.total === 0) return;
 
@@ -679,15 +774,31 @@
         }
 
         function showErrors() {
-            if (processingStats.errors.length === 0) {
+            if (!processingStats.errors || processingStats.errors.length === 0) {
                 errorList.style.display = 'none';
                 return;
             }
 
             errorList.style.display = 'block';
-            errorItems.innerHTML = processingStats.errors.map((error, index) => 
-                `<div class="error-item">${index + 1}. ${error}</div>`
-            ).join('');
+            errorItems.innerHTML = processingStats.errors.map((error) => {
+                // Los errores pueden venir como string (errores generales del sistema)
+                // o como objeto con detalle de la fila { fila, cuitEmisor, cuitReceptor, monto, error }
+                if (typeof error === 'string') {
+                    return `<div class="error-item">${error}</div>`;
+                }
+
+                const fila = error.fila !== undefined ? error.fila : 'N/A';
+                const emisor = error.cuitEmisor || 'N/A';
+                const receptor = error.cuitReceptor || 'N/A';
+                const monto = error.monto || 'N/A';
+                const motivo = error.error || 'Error desconocido';
+
+                return `<div class="error-item">
+                    <span class="fila-badge">Fila ${fila}</span>
+                    Emisor: ${emisor} | Receptor: ${receptor} | Monto: ${monto}
+                    <div class="error-detalle">Motivo: ${motivo}</div>
+                </div>`;
+            }).join('');
         }
 
         async function downloadPDFs() {

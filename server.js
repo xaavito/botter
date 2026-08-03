@@ -265,6 +265,12 @@ app.post('/upload', requireAuth, upload.single('file'), async (req, res) => {
       }
     }
 
+    // Detalle de filas que fallaron (para el resumen ejecutivo)
+    const erroresDetalle = excelProcessor.errores || []
+    const totalFilasProcesadas = excelProcessor.data
+      ? excelProcessor.data.length
+      : resultados.length + erroresDetalle.length
+
     // Enviar resultado final
     if (clientSocket) {
       clientSocket.emit('progress', {
@@ -272,7 +278,10 @@ app.post('/upload', requireAuth, upload.single('file'), async (req, res) => {
         message: `Proceso completado: ${resultados.length} facturas generadas`,
         resultados,
         zipAvailable: zipPath !== null,
-        pdfCount: pdfCount
+        zipFile: zipPath ? path.basename(zipPath) : null,
+        pdfCount: pdfCount,
+        totalFilas: totalFilasProcesadas,
+        errores: erroresDetalle
       })
     }
 
@@ -281,7 +290,9 @@ app.post('/upload', requireAuth, upload.single('file'), async (req, res) => {
       message: `Se procesaron ${resultados.length} facturas exitosamente`,
       facturas: resultados,
       zipFile: zipPath ? path.basename(zipPath) : null,
-      pdfCount: pdfCount
+      pdfCount: pdfCount,
+      totalFilas: totalFilasProcesadas,
+      errores: erroresDetalle
     })
 
   } catch (error) {

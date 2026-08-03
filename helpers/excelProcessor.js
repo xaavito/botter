@@ -12,6 +12,7 @@ class ExcelProcessor {
     this.data = []
     this.maxRetries = 2 // Número máximo de reintentos
     this.runDate = dateAsString() // Fecha de corrida en formato YYYYMMDD
+    this.errores = [] // Detalle de filas que fallaron en la última corrida
   }
 
   /**
@@ -106,6 +107,27 @@ class ExcelProcessor {
       let exito = false
       let ultimoError = null
 
+      // Validar que la fila tenga todos los datos necesarios ANTES de intentar procesar
+      // Si falta algún dato, la fila NO se procesa ni se reintenta, solo se informa y se continúa
+      const camposFaltantes = this.obtenerCamposFaltantes(datosNomindados)
+      if (camposFaltantes.length > 0) {
+        const mensajeError = `Fila incompleta, faltan datos en: ${camposFaltantes.join(', ')}`
+        logger.warn(
+          chalk.yellow(
+            `⚠️  Fila ${i + 1} omitida (no se procesará): ${mensajeError}`
+          )
+        )
+        errores.push({
+          fila: i + 1,
+          cuitEmisor: datosNomindados.cuitEmisor,
+          cuitReceptor: datosNomindados.user,
+          monto: datosNomindados.amount,
+          error: mensajeError,
+          intentos: 0,
+        })
+        continue // Saltar a la siguiente fila, sin procesar ni reintentar
+      }
+
       // Validar CUIT del receptor ANTES de intentar procesar
       try {
         this.validarCUITReceptor(datosNomindados.user)
@@ -125,6 +147,7 @@ class ExcelProcessor {
         })
         continue // Saltar a la siguiente fila
       }
+
 
       // Intentar procesar la fila con reintentos
       for (let intento = 0; intento <= this.maxRetries && !exito; intento++) {
@@ -234,7 +257,47 @@ class ExcelProcessor {
       logger.info(chalk.green.bold('\n✓ Sin errores'))
     }
 
+    // Guardar el detalle de errores en la instancia para poder consultarlo
+    // luego de ejecutar() (por ejemplo, para armar un resumen ejecutivo)
+    this.errores = errores
+
+    // Mostrar resumen ejecutivo final: cuántas OK, cuántas fallaron y el
+    // detalle de cada fila con error (para que puedan revisarse manualmente)
+    this.mostrarResumenEjecutivo(this.data.length, resultados.length, errores)
+
     return resultados
+  }
+
+  /**
+   * Muestra un resumen ejecutivo final del procesamiento:
+   * total de filas, cuántas se generaron OK y el detalle de las que fallaron
+   * (para que puedan revisarse manualmente)
+   * @param {number} totalFilas - Total de filas leídas del Excel
+   * @param {number} totalOk - Total de facturas generadas exitosamente
+   * @param {Array} errores - Detalle de errores por fila
+   */
+  mostrarResumenEjecutivo(totalFilas, totalOk, errores) {
+    const totalFallidas = errores.length
+
+    logger.info(chalk.cyan.bold('\n════════════════════════════════════════'))
+    logger.info(chalk.cyan.bold('   📊 RESUMEN EJECUTIVO'))
+    logger.info(chalk.cyan.bold('════════════════════════════════════════'))
+    logger.info(chalk.white(`   Total de filas procesadas: ${totalFilas}`))
+    logger.info(chalk.green(`   ✓ Facturas generadas OK:   ${totalOk}`))
+    logger.info(chalk.red(`   ✗ Filas con error:         ${totalFallidas}`))
+
+    if (totalFallidas > 0) {
+      logger.info(chalk.yellow.bold('\n   ⚠️  Filas a revisar manualmente:'))
+      errores.forEach((err) => {
+        logger.info(
+          chalk.yellow(
+            `   • Fila ${err.fila} | Emisor: ${err.cuitEmisor || 'N/A'} | Receptor: ${err.cuitReceptor || 'N/A'} | Monto: ${err.monto || 'N/A'} | Motivo: ${err.error}`
+          )
+        )
+      })
+    }
+
+    logger.info(chalk.cyan.bold('════════════════════════════════════════\n'))
   }
 
   /**
@@ -274,6 +337,35 @@ class ExcelProcessor {
     }
 
     return datos
+  }
+
+  /**
+   * Determina qué campos obligatorios faltan en los datos de una fila
+   * Si falta algún dato requerido, la fila no debe procesarse ni reintentarse
+   * @param {Object} datos - Datos preparados de la fila (resultado de prepararDatos)
+   * @returns {Array<string>} Array con los nombres de los campos faltantes (vacío si no falta nada)
+   */
+  obtenerCamposFaltantes(datos) {
+    // Campos obligatorios para poder generar una factura
+    const camposRequeridos = [
+      { campo: 'cuitEmisor', label: 'CUIT Emisor' },
+      { campo: 'password', label: 'Contraseña' },
+      { campo: 'user', label: 'CUIT Receptor' },
+      { campo: 'amount', label: 'Monto' },
+      { campo: 'modoPago', label: 'Modo de Pago' },
+      { campo: 'tipoFactura', label: 'Tipo de Factura' },
+      { campo: 'ivaReceptor', label: 'IVA Receptor' },
+    ]
+
+    const faltantes = []
+    for (const { campo, label } of camposRequeridos) {
+      const valor = datos[campo]
+      if (valor === undefined || valor === null || String(valor).trim() === '') {
+        faltantes.push(label)
+      }
+    }
+
+    return faltantes
   }
 
   /**
