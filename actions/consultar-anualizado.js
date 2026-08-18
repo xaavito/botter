@@ -14,8 +14,10 @@ const { puntoVentaModal } = require('../pages/pto_vta_modal.js')
 const { seleccionarFechas } = require('../pages/seleccionar_fechas.js')
 const { obtenerValoresFacturas } = require('../pages/valores_facturas.js')
 const { consultar } = require('../pages/consultar.js')
+const { esperarNuevaPestana } = require('../helpers/waitHelpers.js')
 
 const logger = require('../helpers/logger.js')
+
 
 /**
  * Consulta y guarda facturación anual completa desde AFIP
@@ -39,8 +41,8 @@ async function main() {
 
     await misComprobantes(page)
 
-    let pages = await context.pages()
-    const facturadorPage = pages[1]
+    const facturadorPage = await esperarNuevaPestana(context)
+
 
     await emitidos(facturadorPage)
 

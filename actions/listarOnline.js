@@ -1,5 +1,7 @@
 const { saveToFacturacion, launchBrowser } = require('../helpers/helper.js')
+const { esperarNuevaPestana } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
+
 
 const { login } = require('../pages/login.js')
 const { verTodos } = require('../pages/ver_todos.js')
@@ -35,8 +37,8 @@ async function listarOnline() {
 
     await comprobantesEnLinea(page)
 
-    let pages = await context.pages()
-    const facturadorPage = pages[1]
+    const facturadorPage = await esperarNuevaPestana(context)
+
 
     await miPagina(facturadorPage)
 

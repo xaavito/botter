@@ -61,10 +61,42 @@ async function esperarMinimo(page, ms = 500) {
   await page.waitForTimeout(ms)
 }
 
+/**
+ * Espera a que exista/se abra una nueva pestaña (popup) dentro de un contexto
+ * de Playwright, en lugar de depender de un timeout fijo.
+ *
+ * Si la pestaña en el índice solicitado ya existe (porque se abrió antes de
+ * llamar a esta función), se retorna de inmediato. Si todavía no existe, se
+ * queda escuchando el evento 'page' del contexto hasta que aparezca o se
+ * cumpla el timeout.
+ *
+ * @param {BrowserContext} context - Contexto del browser de Playwright
+ * @param {number} indice - Índice de la pestaña esperada (default: 1 = la segunda pestaña abierta)
+ * @param {number} timeout - Timeout máximo en ms a esperar por la nueva pestaña (default: 30000)
+ * @returns {Promise<Page>} La página/pestaña encontrada, ya con su DOM cargado
+ * @throws {Error} Si la pestaña no aparece dentro del timeout
+ */
+async function esperarNuevaPestana(context, indice = 1, timeout = 30000) {
+  let pagina = context.pages()[indice]
+
+  if (!pagina) {
+    pagina = await context.waitForEvent('page', { timeout })
+  }
+
+  // Esperar a que la pestaña tenga al menos el DOM listo antes de devolverla
+  await pagina
+    .waitForLoadState('domcontentloaded', { timeout })
+    .catch(() => {})
+
+  return pagina
+}
+
 module.exports = {
   esperarCargaPagina,
   esperarElemento,
   clickYEsperar,
   esperarYClick,
   esperarMinimo,
+  esperarNuevaPestana,
 }
+

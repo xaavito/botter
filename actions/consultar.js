@@ -7,7 +7,9 @@ const {
   launchBrowser,
 } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
+const { esperarNuevaPestana } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
+
 
 /**
  * Descarga facturas del mes actual desde AFIP
@@ -38,8 +40,8 @@ async function main() {
     await page.click('text=Comprobantes en línea')
     await page.waitForTimeout(1000)
 
-    let pages = await context.pages()
-    const facturadorPage = pages[1]
+    const facturadorPage = await esperarNuevaPestana(context)
+
 
     // Pagina
     await navigationPromise

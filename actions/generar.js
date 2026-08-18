@@ -4,7 +4,9 @@ const {
   launchBrowser,
   getExcelDownloadsFolder,
 } = require('../helpers/helper.js')
+const { esperarNuevaPestana } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
+
 const path = require('path')
 const fs = require('fs')
 
@@ -90,8 +92,8 @@ async function generar({ cantidad = 1, datos = null }) {
 
     await comprobantesEnLinea(page)
 
-    let pages = await context.pages()
-    const facturadorPage = pages[1]
+    const facturadorPage = await esperarNuevaPestana(context)
+
 
     await seleccionarEmpresa(facturadorPage)
 

@@ -4,7 +4,9 @@
 
 const { launchBrowser } = require('../helpers/helper.js')
 const { login } = require('../pages/login.js')
+const { esperarNuevaPestana } = require('../helpers/waitHelpers.js')
 const logger = require('../helpers/logger.js')
+
 
 /**
  * Genera Volante Electrónico de Pago (VEP) para monotributo
@@ -32,10 +34,8 @@ async function main() {
     'text=Adhesión y/o empadronamiento al monotributo, modificación de datos e ingreso de claves de confirmación'
   )
 
-  await page.waitForTimeout(3000)
+  const monotributoPage = await esperarNuevaPestana(context)
 
-  const pages = await context.pages()
-  const monotributoPage = pages[1]
 
   const navigationPromiseMonotributo = monotributoPage.waitForNavigation({
     waitUntil: 'domcontentloaded',
